@@ -1,9 +1,10 @@
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { CacheModule, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtModule } from '@nestjs/jwt';
 
 import { ConfigModule, ConfigService } from 'src/config';
 import { ErrorTypeEnum } from 'src/common/enums';
+import { SendGridService } from 'src/sendgrid';
 import { DatabaseModule } from 'src/database';
 
 import { UserEntity } from '../users/entities';
@@ -27,12 +28,17 @@ describe('AuthService', () => {
         JwtModule.register({
           secret: 'some-secret',
         }),
+        CacheModule.register(),
         DatabaseModule,
         ConfigModule,
         UsersModule,
       ],
       providers: [
         AuthService,
+        {
+          provide: SendGridService,
+          useValue: {},
+        },
         {
           provide: ConfigService,
           useValue: {

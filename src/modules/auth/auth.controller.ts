@@ -11,11 +11,20 @@ import {
 } from '@nestjs/common';
 
 import { User } from 'src/common/decorators';
+import { ID } from 'src/common/dto';
 
 import { UserEntity } from '../users/entities';
 import { UsersService } from '../users';
 
-import { JwtResponseDto, CredentialsDto, CreateProfileDto, SelectProfileDto } from './dto';
+import {
+  JwtResponseDto,
+  CredentialsDto,
+  CreateProfileDto,
+  SelectProfileDto,
+  ResetPasswordDto,
+  SendResetPasswordDto,
+  ConfirmationEmailDto,
+} from './dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards';
 
@@ -52,6 +61,33 @@ export class AuthController {
   @Post('signup')
   public async createUser(@Body() data: CreateProfileDto): Promise<JwtResponseDto> {
     return this.authService.createUser(data);
+  }
+
+  /**
+   * [description]
+   * @param data
+   */
+  @Post('send-reset-password')
+  public async sendResetPassword(@Body() data: SendResetPasswordDto): Promise<void> {
+    return this.authService.sendResetPassword(data);
+  }
+
+  /**
+   * [description]
+   * @param data
+   */
+  @Post('reset-password')
+  public async resetPassword(@Body() data: ResetPasswordDto): Promise<void> {
+    return this.authService.resetPassword(data);
+  }
+
+  /**
+   * [description]
+   * @param data
+   */
+  @Post('confirmation-email-code')
+  public async confirmationEmail(@Body() data: ConfirmationEmailDto): Promise<ID> {
+    return this.authService.confirmationEmailCode(data);
   }
 
   /**
