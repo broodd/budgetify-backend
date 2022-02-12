@@ -18,6 +18,27 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: 'redis:alpine'
+    ports:
+      - '6379:6379'
+    networks:
+      - network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+  redis-commander:
+    image: 'rediscommander/redis-commander:latest'
+    environment:
+      REDIS_HOSTS: redis
+    ports:
+      - '8081:8081'
+    networks:
+      - network
+
 networks:
   network:
     driver: bridge

@@ -73,3 +73,10 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+---
+
+## Gmail mail service configuration
+
+- Enable less secure apps - https://www.google.com/settings/security/lesssecureapps
+- Disable Captcha temporarily so you can connect the new device/server - https://accounts.google.com/b/0/displayunlockcaptcha
