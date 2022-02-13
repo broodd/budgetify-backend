@@ -6,6 +6,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from './config';
 import { DatabaseModule } from './database';
 
+import { AccountsModule } from './modules/accounts';
 import { UsersModule } from './modules/users';
 import { AuthModule } from './modules/auth';
 
@@ -28,6 +29,7 @@ import { AppController } from './app.controller';
     ConfigModule,
     AuthModule,
     UsersModule,
+    AccountsModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

@@ -1,17 +1,17 @@
 import { PaginationMixin } from 'src/common/dto';
 
-import { UserEntity } from '../entities';
+import { AccountEntity } from '../entities';
 
 /**
  * [description]
  */
-export class PaginationUsersDto extends PaginationMixin(UserEntity) {
+export class PaginationAccountsDto extends PaginationMixin(AccountEntity) {
   /**
    * [description]
    * @param result
    * @param count
    */
-  constructor([result, count]: [UserEntity[], number]) {
+  constructor([result, count]: [AccountEntity[], number]) {
     super();
     Object.assign(this, { result, count });
   }

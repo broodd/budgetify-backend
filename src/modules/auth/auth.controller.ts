@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 
 import { User } from 'src/common/decorators';
-import { ID } from 'src/common/dto';
 
 import { UserEntity } from '../users/entities';
 import { UsersService } from '../users';
@@ -86,8 +85,8 @@ export class AuthController {
    * @param data
    */
   @Post('confirmation-email-code')
-  public async confirmationEmail(@Body() data: ConfirmationEmailDto): Promise<ID> {
-    return this.authService.confirmationEmailCode(data);
+  public async confirmationEmail(@Body() data: ConfirmationEmailDto): Promise<void> {
+    await this.authService.confirmationEmailCode(data);
   }
 
   /**

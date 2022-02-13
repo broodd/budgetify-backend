@@ -80,3 +80,7 @@ Nest is [MIT licensed](LICENSE).
 
 - Enable less secure apps - https://www.google.com/settings/security/lesssecureapps
 - Disable Captcha temporarily so you can connect the new device/server - https://accounts.google.com/b/0/displayunlockcaptcha
+
+## Typeorm migration
+
+- Create: `npm run typeorm:cli -- migration:create -n`

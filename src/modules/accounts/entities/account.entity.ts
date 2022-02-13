@@ -2,23 +2,21 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
+  ManyToOne,
   BaseEntity,
-  BeforeInsert,
-  BeforeUpdate,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  OneToMany,
 } from 'typeorm';
 
-import * as bcrypt from 'bcrypt';
-import { AccountEntity } from 'src/modules/accounts/entities';
+import { UserEntity } from 'src/modules/users/entities';
 
 /**
  * [description]
  */
-@Entity('users')
-export class UserEntity extends BaseEntity {
+@Entity('accounts')
+export class AccountEntity extends BaseEntity {
   /**
    * [description]
    */
@@ -29,37 +27,27 @@ export class UserEntity extends BaseEntity {
   /**
    * [description]
    */
-  @ApiProperty({ maxLength: 320, uniqueItems: true })
-  @Column({ type: 'varchar', length: 320, unique: true })
-  public readonly email: string;
+  @ApiProperty({ maxLength: 64, nullable: false })
+  @Column({ type: 'varchar', length: 64, nullable: false })
+  public readonly name: string;
+
+  /**
+   * [description]
+   */
+  @ApiProperty()
+  @Column({ type: 'float', default: 0, nullable: false })
+  public readonly balance: number;
 
   /**
    * [description]
    */
   @ApiHideProperty()
-  @Column({ type: 'varchar', length: 64, select: false })
-  public password: string;
-
-  /**
-   * [description]
-   */
-  @ApiHideProperty()
-  @OneToMany(() => AccountEntity, ({ owner }) => owner, {
-    nullable: true,
-    cascade: true,
-    eager: false,
+  @ManyToOne(() => UserEntity, {
+    onDelete: 'CASCADE',
+    nullable: false,
   })
-  public readonly files?: Partial<AccountEntity>;
-
-  /**
-   * [description]
-   */
-  @BeforeInsert()
-  @BeforeUpdate()
-  public async hashPassword(): Promise<void> {
-    if (!this.password) return;
-    this.password = await bcrypt.hash(this.password, 8);
-  }
+  @JoinColumn()
+  public readonly owner: Partial<UserEntity>;
 
   /**
    * [description]

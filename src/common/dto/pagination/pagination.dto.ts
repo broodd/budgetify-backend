@@ -18,7 +18,7 @@ export function PaginationMixin<Entity>(classRef: Type<Entity>): any {
      * Total number of records.
      */
     @ApiProperty()
-    public readonly total: number;
+    public readonly count: number;
   }
 
   return Pagination;
