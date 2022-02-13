@@ -26,6 +26,7 @@
     "start:debug": "cross-env NODE_ENV=development nest start --debug --watch",
     "start:prod": "cross-env NODE_ENV=production node dist/main",
     "typeorm:cli": "ts-node ./node_modules/typeorm/cli",
+    "create:migration": "npm run typeorm:cli -- migration:create -d src/database/migrations -n",
     "doc": "npm run doc:generate -- -s",
     "doc:generate": "npx @compodoc/compodoc -p tsconfig.json",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

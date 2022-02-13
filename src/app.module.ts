@@ -11,6 +11,7 @@ import { UsersModule } from './modules/users';
 import { AuthModule } from './modules/auth';
 
 import { AppController } from './app.controller';
+import { CategoriesModule } from './modules/categories';
 
 /**
  * [description]
@@ -30,6 +31,7 @@ import { AppController } from './app.controller';
     AuthModule,
     UsersModule,
     AccountsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

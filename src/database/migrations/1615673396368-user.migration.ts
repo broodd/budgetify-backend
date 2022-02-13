@@ -12,8 +12,8 @@ const data: Partial<UserEntity>[] = [
 
 export class user1615673396368 implements MigrationInterface {
   public async up({ connection }: QueryRunner): Promise<void> {
-    const userEntityRepository = connection.getRepository(UserEntity);
-    await userEntityRepository.save(data);
+    const repository = connection.getRepository(UserEntity);
+    await repository.save(data);
   }
 
   public async down({ connection }: QueryRunner): Promise<void> {
