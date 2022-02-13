@@ -14,21 +14,22 @@ import {
 
 import { ErrorTypeEnum } from 'src/common/enums';
 
-import { PaginationUsersDto } from './dto';
-import { UserEntity } from './entities';
+import { PaginationAccountsDto } from './dto';
+import { AccountEntity } from './entities';
+import { UserEntity } from '../users/entities';
 
 /**
  * [description]
  */
 @Injectable()
-export class UsersService {
+export class AccountsService {
   /**
    * [description]
-   * @param userEntityRepository
+   * @param accountEntityRepository
    */
   constructor(
-    @InjectRepository(UserEntity)
-    public readonly userEntityRepository: Repository<UserEntity>,
+    @InjectRepository(AccountEntity)
+    public readonly accountEntityRepository: Repository<AccountEntity>,
   ) {}
 
   /**
@@ -37,13 +38,13 @@ export class UsersService {
    * @param options
    */
   public async createOne(
-    entityLike: Partial<UserEntity>,
+    entityLike: Partial<AccountEntity>,
     options: SaveOptions = { transaction: false },
-  ): Promise<UserEntity> {
-    return this.userEntityRepository.manager.transaction(async () => {
-      const entity = this.userEntityRepository.create(entityLike);
-      const { id } = await this.userEntityRepository.save(entity, options).catch(() => {
-        throw new ConflictException(ErrorTypeEnum.USER_ALREADY_EXIST);
+  ): Promise<AccountEntity> {
+    return this.accountEntityRepository.manager.transaction(async () => {
+      const entity = this.accountEntityRepository.create(entityLike);
+      const { id } = await this.accountEntityRepository.save(entity, options).catch(() => {
+        throw new ConflictException(ErrorTypeEnum.ACCOUNT_ALREADY_EXIST);
       });
 
       return this.selectOne({ id }, { loadEagerRelations: true });
@@ -54,9 +55,11 @@ export class UsersService {
    *  [description]
    * @param optionsOrConditions
    */
-  public find(optionsOrConditions?: FindManyOptions<UserEntity>): SelectQueryBuilder<UserEntity> {
-    const metadata = this.userEntityRepository.metadata;
-    const qb = this.userEntityRepository.createQueryBuilder(
+  public find(
+    optionsOrConditions?: FindManyOptions<AccountEntity>,
+  ): SelectQueryBuilder<AccountEntity> {
+    const metadata = this.accountEntityRepository.metadata;
+    const qb = this.accountEntityRepository.createQueryBuilder(
       FindOptionsUtils.extractFindManyOptionsAlias(optionsOrConditions) || metadata.name,
     );
 
@@ -68,7 +71,7 @@ export class UsersService {
 
       /**
        * Place for common relation
-       * @example qb.leftJoinAndSelect('UserEntity.relation_field', 'UserEntity_relation_field')
+       * @example qb.leftJoinAndSelect('AccountEntity.relation_field', 'AccountEntity_relation_field')
        */
     }
 
@@ -80,15 +83,18 @@ export class UsersService {
    * @param options
    */
   public async selectAll(
-    options: FindManyOptions<UserEntity> = { loadEagerRelations: false },
-  ): Promise<PaginationUsersDto> {
+    options: FindManyOptions<AccountEntity> = { loadEagerRelations: false },
+    owner?: Partial<UserEntity>,
+  ): Promise<PaginationAccountsDto> {
     const qb = this.find(classToPlain(options));
     if (options.where) qb.where(options.where);
+    if (owner) qb.andWhere({ owner });
+
     return qb
       .getManyAndCount()
-      .then((data) => new PaginationUsersDto(data))
+      .then((data) => new PaginationAccountsDto(data))
       .catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.USERS_NOT_FOUND);
+        throw new NotFoundException(ErrorTypeEnum.ACCOUNTS_NOT_FOUND);
       });
   }
 
@@ -98,14 +104,14 @@ export class UsersService {
    * @param options
    */
   public async selectOne(
-    conditions: FindConditions<UserEntity>,
-    options: FindOneOptions<UserEntity> = { loadEagerRelations: false },
-  ): Promise<UserEntity> {
+    conditions: FindConditions<AccountEntity>,
+    options: FindOneOptions<AccountEntity> = { loadEagerRelations: false },
+  ): Promise<AccountEntity> {
     return this.find(classToPlain(options))
       .where(conditions)
       .getOneOrFail()
       .catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.USER_NOT_FOUND);
+        throw new NotFoundException(ErrorTypeEnum.ACCOUNT_NOT_FOUND);
       });
   }
 
@@ -116,15 +122,15 @@ export class UsersService {
    * @param options
    */
   public async updateOne(
-    conditions: Partial<UserEntity>,
-    entityLike: Partial<UserEntity>,
+    conditions: Partial<AccountEntity>,
+    entityLike: Partial<AccountEntity>,
     options: SaveOptions = { transaction: false },
-  ): Promise<UserEntity> {
-    return this.userEntityRepository.manager.transaction(async () => {
+  ): Promise<AccountEntity> {
+    return this.accountEntityRepository.manager.transaction(async () => {
       const mergeIntoEntity = await this.selectOne(conditions);
-      const entity = this.userEntityRepository.merge(mergeIntoEntity, entityLike);
-      const { id } = await this.userEntityRepository.save(entity, options).catch(() => {
-        throw new ConflictException(ErrorTypeEnum.USER_ALREADY_EXIST);
+      const entity = this.accountEntityRepository.merge(mergeIntoEntity, entityLike);
+      const { id } = await this.accountEntityRepository.save(entity, options).catch(() => {
+        throw new ConflictException(ErrorTypeEnum.ACCOUNT_ALREADY_EXIST);
       });
 
       return this.selectOne({ id }, { loadEagerRelations: true });
@@ -137,13 +143,13 @@ export class UsersService {
    * @param options
    */
   public async deleteOne(
-    conditions: FindConditions<UserEntity>,
+    conditions: FindConditions<AccountEntity>,
     options: RemoveOptions = { transaction: false },
-  ): Promise<UserEntity> {
-    return this.userEntityRepository.manager.transaction(async () => {
+  ): Promise<AccountEntity> {
+    return this.accountEntityRepository.manager.transaction(async () => {
       const entity = await this.selectOne(conditions);
-      return this.userEntityRepository.remove(entity, options).catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.USER_NOT_FOUND);
+      return this.accountEntityRepository.remove(entity, options).catch(() => {
+        throw new NotFoundException(ErrorTypeEnum.ACCOUNT_NOT_FOUND);
       });
     });
   }
