@@ -1,4 +1,4 @@
-import { CacheModule, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { CacheModule, ConflictException, BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtModule } from '@nestjs/jwt';
 
@@ -67,9 +67,9 @@ describe('AuthService', () => {
     });
 
     it('should be return unauthorized exception', async () => {
-      const error = new UnauthorizedException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
+      const error = new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
       return service.createToken({ ...expected, password: '' }).catch((err) => {
-        expect(err).toBeInstanceOf(UnauthorizedException);
+        expect(err).toBeInstanceOf(BadRequestException);
         expect(err).toEqual(error);
       });
     });
@@ -102,9 +102,9 @@ describe('AuthService', () => {
     });
 
     it('should be return unauthorized exception', async () => {
-      const error = new UnauthorizedException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
+      const error = new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
       return service.validateUser({ ...expected, password: '' }).catch((err) => {
-        expect(err).toBeInstanceOf(UnauthorizedException);
+        expect(err).toBeInstanceOf(BadRequestException);
         expect(err).toEqual(error);
       });
     });

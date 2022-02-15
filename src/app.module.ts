@@ -6,12 +6,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from './config';
 import { DatabaseModule } from './database';
 
+import { TransactionsModule } from './modules/transactions';
+import { CategoriesModule } from './modules/categories';
 import { AccountsModule } from './modules/accounts';
 import { UsersModule } from './modules/users';
 import { AuthModule } from './modules/auth';
 
 import { AppController } from './app.controller';
-import { CategoriesModule } from './modules/categories';
 
 /**
  * [description]
@@ -32,6 +33,7 @@ import { CategoriesModule } from './modules/categories';
     UsersModule,
     AccountsModule,
     CategoriesModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

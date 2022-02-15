@@ -5,6 +5,7 @@ import {
   ManyToOne,
   BaseEntity,
   JoinColumn,
+  FindOperator,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
@@ -35,7 +36,18 @@ export class AccountEntity extends BaseEntity {
    * [description]
    */
   @ApiProperty()
-  @Column({ type: 'float', default: 0, nullable: false })
+  @Column({
+    type: 'numeric',
+    default: 0,
+    nullable: false,
+    precision: 10,
+    scale: 2,
+    transformer: {
+      to: (value: string | FindOperator<AccountEntity>): string | FindOperator<AccountEntity> =>
+        value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
   public readonly balance: number;
 
   /**
@@ -56,7 +68,7 @@ export class AccountEntity extends BaseEntity {
   @CreateDateColumn({
     readonly: true,
     type: 'timestamptz',
-    default: () => 'NOW()',
+    default: () => 'CURRENT_TIMESTAMP',
   })
   public readonly createdAt: Date;
 
@@ -67,7 +79,7 @@ export class AccountEntity extends BaseEntity {
   @UpdateDateColumn({
     readonly: true,
     type: 'timestamptz',
-    default: () => 'NOW()',
+    default: () => 'CURRENT_TIMESTAMP',
   })
   public readonly updatedAt: Date;
 }
