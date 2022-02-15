@@ -25,11 +25,11 @@ import { UserEntity } from '../users/entities';
 export class CategoriesService {
   /**
    * [description]
-   * @param accountEntityRepository
+   * @param categoryEntityRepository
    */
   constructor(
     @InjectRepository(CategoryEntity)
-    public readonly accountEntityRepository: Repository<CategoryEntity>,
+    public readonly categoryEntityRepository: Repository<CategoryEntity>,
   ) {}
 
   /**
@@ -41,9 +41,9 @@ export class CategoriesService {
     entityLike: Partial<CategoryEntity>,
     options: SaveOptions = { transaction: false },
   ): Promise<CategoryEntity> {
-    return this.accountEntityRepository.manager.transaction(async () => {
-      const entity = this.accountEntityRepository.create(entityLike);
-      const { id } = await this.accountEntityRepository.save(entity, options).catch(() => {
+    return this.categoryEntityRepository.manager.transaction(async () => {
+      const entity = this.categoryEntityRepository.create(entityLike);
+      const { id } = await this.categoryEntityRepository.save(entity, options).catch(() => {
         throw new ConflictException(ErrorTypeEnum.CATEGORY_ALREADY_EXIST);
       });
 
@@ -58,8 +58,8 @@ export class CategoriesService {
   public find(
     optionsOrConditions?: FindManyOptions<CategoryEntity>,
   ): SelectQueryBuilder<CategoryEntity> {
-    const metadata = this.accountEntityRepository.metadata;
-    const qb = this.accountEntityRepository.createQueryBuilder(
+    const metadata = this.categoryEntityRepository.metadata;
+    const qb = this.categoryEntityRepository.createQueryBuilder(
       FindOptionsUtils.extractFindManyOptionsAlias(optionsOrConditions) || metadata.name,
     );
 
@@ -126,10 +126,10 @@ export class CategoriesService {
     entityLike: Partial<CategoryEntity>,
     options: SaveOptions = { transaction: false },
   ): Promise<CategoryEntity> {
-    return this.accountEntityRepository.manager.transaction(async () => {
+    return this.categoryEntityRepository.manager.transaction(async () => {
       const mergeIntoEntity = await this.selectOne(conditions);
-      const entity = this.accountEntityRepository.merge(mergeIntoEntity, entityLike);
-      const { id } = await this.accountEntityRepository.save(entity, options).catch(() => {
+      const entity = this.categoryEntityRepository.merge(mergeIntoEntity, entityLike);
+      const { id } = await this.categoryEntityRepository.save(entity, options).catch(() => {
         throw new ConflictException(ErrorTypeEnum.CATEGORY_ALREADY_EXIST);
       });
 
@@ -146,9 +146,9 @@ export class CategoriesService {
     conditions: FindConditions<CategoryEntity>,
     options: RemoveOptions = { transaction: false },
   ): Promise<CategoryEntity> {
-    return this.accountEntityRepository.manager.transaction(async () => {
+    return this.categoryEntityRepository.manager.transaction(async () => {
       const entity = await this.selectOne(conditions);
-      return this.accountEntityRepository.remove(entity, options).catch(() => {
+      return this.categoryEntityRepository.remove(entity, options).catch(() => {
         throw new NotFoundException(ErrorTypeEnum.CATEGORY_NOT_FOUND);
       });
     });

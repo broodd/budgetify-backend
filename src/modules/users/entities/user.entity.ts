@@ -68,7 +68,7 @@ export class UserEntity extends BaseEntity {
   @CreateDateColumn({
     readonly: true,
     type: 'timestamptz',
-    default: () => 'NOW()',
+    default: () => 'CURRENT_TIMESTAMP',
   })
   public readonly createdAt: Date;
 
@@ -79,7 +79,7 @@ export class UserEntity extends BaseEntity {
   @UpdateDateColumn({
     readonly: true,
     type: 'timestamptz',
-    default: () => 'NOW()',
+    default: () => 'CURRENT_TIMESTAMP',
   })
   public readonly updatedAt: Date;
 }

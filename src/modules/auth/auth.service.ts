@@ -123,9 +123,9 @@ export class AuthService {
 
     await this.sendGridService.sendMail({
       to: data.email,
-      subject: 'Forgot your password?',
-      text: `Reset password code: ${code}`,
-      html: `Reset password code: <b>${code}</b>`,
+      subject: 'Забули свій пароль?',
+      text: `Код для скидання паролю: ${code}`,
+      html: `Код для скидання паролю: <b>${code}</b>`,
     });
   }
 
