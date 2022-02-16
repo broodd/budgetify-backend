@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { classToPlain } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 import {
   Repository,
   SaveOptions,
@@ -15,7 +15,9 @@ import {
 import { ErrorTypeEnum } from 'src/common/enums';
 
 import { AccountEntity } from '../accounts/entities';
+import { CategoriesService } from '../categories';
 import { UserEntity } from '../users/entities';
+import { AccountsService } from '../accounts';
 
 import { PaginationTransactionsDto } from './dto';
 import { TransactionEntity, TransactionTypeEnum } from './entities';
@@ -32,10 +34,52 @@ export class TransactionsService {
   constructor(
     @InjectRepository(TransactionEntity)
     public readonly transactionEntityRepository: Repository<TransactionEntity>,
-
     @InjectRepository(AccountEntity)
     public readonly accountEntityRepository: Repository<AccountEntity>,
+    public readonly categoriesService: CategoriesService,
+    public readonly accountsService: AccountsService,
   ) {}
+
+  /**
+   * [description]
+   * @param entityLike
+   */
+  public async processOne(
+    entityLike: Partial<TransactionEntity>,
+    owner: Partial<UserEntity>,
+  ): Promise<Partial<TransactionEntity>> {
+    const { type, amount, account } = entityLike;
+    let entityAmount: number;
+
+    if (type === TransactionTypeEnum.EXPENSE) {
+      await this.accountEntityRepository.decrement(
+        { id: account.id, owner },
+        'balance',
+        Math.abs(amount),
+      );
+      entityAmount = -Math.abs(amount);
+    } else {
+      await this.accountEntityRepository.increment(
+        { id: account.id, owner },
+        'balance',
+        Math.abs(amount),
+      );
+      entityAmount = Math.abs(amount);
+    }
+
+    return plainToClass(TransactionEntity, { ...entityLike, amount: entityAmount });
+  }
+
+  public genReverseState(entity: Partial<TransactionEntity>): Partial<TransactionEntity> {
+    const category = { id: entity.category.id };
+    const account = { id: entity.category.id };
+    const type =
+      entity.type === TransactionTypeEnum.EXPENSE
+        ? TransactionTypeEnum.INCOME
+        : TransactionTypeEnum.EXPENSE;
+
+    return plainToClass(TransactionEntity, { ...entity, type, category, account });
+  }
 
   /**
    * [description]
@@ -47,21 +91,23 @@ export class TransactionsService {
     options: SaveOptions = { transaction: false },
   ): Promise<TransactionEntity> {
     return this.transactionEntityRepository.manager.transaction(async () => {
-      const { type, amount, account, toTransferAccount } = entityLike;
-      const absAmount = Math.abs(amount);
+      const { owner } = entityLike;
 
-      if (type === TransactionTypeEnum.TRANSFER) {
-        await Promise.all([
-          this.accountEntityRepository.decrement(account, 'balance', absAmount),
-          this.accountEntityRepository.increment(toTransferAccount, 'balance', absAmount),
-        ]);
-      } else if (type === TransactionTypeEnum.EXPENSE) {
-        await this.accountEntityRepository.decrement(account, 'balance', absAmount);
-      } else if (type === TransactionTypeEnum.INCOME) {
-        await this.accountEntityRepository.increment(account, 'balance', absAmount);
-      }
+      const { account, category } = entityLike;
+      await Promise.all([
+        this.categoriesService.selectOne(
+          { id: category.id, owner },
+          { loadEagerRelations: false, select: ['id'] },
+        ),
+        this.accountsService.selectOne(
+          { id: account.id, owner },
+          { loadEagerRelations: false, select: ['id'] },
+        ),
+      ]);
 
-      const entity = this.transactionEntityRepository.create(entityLike);
+      const proccessedEntity = await this.processOne(entityLike, owner);
+
+      const entity = this.transactionEntityRepository.create(proccessedEntity);
       const { id } = await this.transactionEntityRepository.save(entity, options).catch(() => {
         throw new ConflictException(ErrorTypeEnum.TRANSACTION_ALREADY_EXIST);
       });
@@ -146,8 +192,15 @@ export class TransactionsService {
     options: SaveOptions = { transaction: false },
   ): Promise<TransactionEntity> {
     return this.transactionEntityRepository.manager.transaction(async () => {
-      const mergeIntoEntity = await this.selectOne(conditions);
+      const { owner } = conditions;
+      const mergeIntoEntity = await this.selectOne(conditions, {
+        relations: ['category', 'account'],
+      });
+
+      await this.processOne(this.genReverseState(mergeIntoEntity), owner);
       const entity = this.transactionEntityRepository.merge(mergeIntoEntity, entityLike);
+      await this.processOne(entity, owner);
+
       const { id } = await this.transactionEntityRepository.save(entity, options).catch(() => {
         throw new ConflictException(ErrorTypeEnum.TRANSACTION_ALREADY_EXIST);
       });
@@ -162,11 +215,17 @@ export class TransactionsService {
    * @param options
    */
   public async deleteOne(
-    conditions: FindConditions<TransactionEntity>,
+    conditions: Partial<TransactionEntity>,
     options: RemoveOptions = { transaction: false },
   ): Promise<TransactionEntity> {
+    const { owner } = conditions;
     return this.transactionEntityRepository.manager.transaction(async () => {
-      const entity = await this.selectOne(conditions);
+      const entity = await this.selectOne(conditions, {
+        relations: ['category', 'account'],
+      });
+
+      await this.processOne(this.genReverseState(entity), owner);
+
       return this.transactionEntityRepository.remove(entity, options).catch(() => {
         throw new NotFoundException(ErrorTypeEnum.TRANSACTION_NOT_FOUND);
       });

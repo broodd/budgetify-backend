@@ -2,19 +2,28 @@ import {
   IsDate,
   IsEnum,
   IsNumber,
-  IsOptional,
   MaxLength,
   MinLength,
   NotEquals,
-  ValidateIf,
+  IsOptional,
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, TransformFnParams, Type } from 'class-transformer';
 
 import { ID } from 'src/common/dto';
 
 import { TransactionTypeEnum } from '../entities';
+
+enum CreateTransactionType {
+  EXPENSE = TransactionTypeEnum.EXPENSE,
+  INCOME = TransactionTypeEnum.INCOME,
+}
+
+interface AmountTransformParams extends TransformFnParams {
+  value: number;
+  obj: Partial<CreateTransactionDto>;
+}
 
 /**
  * [description]
@@ -23,8 +32,8 @@ export class CreateTransactionDto {
   /**
    * [description]
    */
-  @IsEnum(TransactionTypeEnum)
-  @ApiProperty({ enum: TransactionTypeEnum, examples: TransactionTypeEnum })
+  @IsEnum(CreateTransactionType)
+  @ApiProperty({ enum: CreateTransactionType, examples: CreateTransactionType })
   public readonly type: TransactionTypeEnum;
 
   /**
@@ -32,6 +41,9 @@ export class CreateTransactionDto {
    */
   @IsNumber({ maxDecimalPlaces: 2 })
   @NotEquals(0)
+  @Transform(({ value, obj }: AmountTransformParams) =>
+    obj.type === TransactionTypeEnum.EXPENSE ? -Math.abs(value) : Math.abs(value),
+  )
   @ApiProperty({ example: 1 })
   public readonly amount: number;
 
@@ -54,26 +66,16 @@ export class CreateTransactionDto {
   /**
    * [description]
    */
-  @ValidateIf((o) => o.type !== TransactionTypeEnum.TRANSFER || o.category)
   @ValidateNested()
   @Type(() => ID)
-  @ApiPropertyOptional({ type: ID })
-  public readonly category?: ID;
+  @ApiProperty({ type: ID, example: { id: 'd2727cf0-8631-48ea-98fd-29d7404b1bca' } })
+  public readonly category: ID;
 
   /**
    * [description]
    */
   @ValidateNested()
   @Type(() => ID)
-  @ApiProperty({ type: ID })
+  @ApiProperty({ type: ID, example: { id: 'd2727cf0-8631-48ea-98fd-29d7404b1bca' } })
   public readonly account: ID;
-
-  /**
-   * [description]
-   */
-  @ValidateIf((o) => o.type === TransactionTypeEnum.TRANSFER || o.toTransferAccount)
-  @ValidateNested()
-  @Type(() => ID)
-  @ApiPropertyOptional({ type: ID })
-  public readonly toTransferAccount?: ID;
 }

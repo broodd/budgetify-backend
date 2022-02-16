@@ -8,6 +8,8 @@ import { DatabaseModule } from 'src/database';
 import { ConfigModule } from 'src/config';
 
 import { AccountEntity } from '../accounts/entities';
+import { CategoriesModule } from '../categories';
+import { AccountsModule } from '../accounts';
 
 import { PaginationTransactionsDto, SelectTransactionsDto } from './dto';
 import { TransactionEntity, TransactionTypeEnum } from './entities';
@@ -39,6 +41,8 @@ describe('TransactionsService', () => {
         TypeOrmModule.forFeature([TransactionEntity, AccountEntity]),
         ConfigModule,
         DatabaseModule,
+        AccountsModule,
+        CategoriesModule,
       ],
       providers: [TransactionsService],
     }).compile();
@@ -124,6 +128,8 @@ describe('TransactionsService', () => {
       jest
         .spyOn(service, 'selectOne')
         .mockImplementationOnce(async () => ({ id: '' } as TransactionEntity));
+      jest.spyOn(service, 'genReverseState').mockImplementationOnce(() => new TransactionEntity());
+      jest.spyOn(service, 'processOne').mockImplementationOnce(async () => new TransactionEntity());
 
       return service.updateOne({ id: '' }, { description: null }).catch((err) => {
         expect(err).toBeInstanceOf(ConflictException);
@@ -143,6 +149,8 @@ describe('TransactionsService', () => {
       const error = new NotFoundException(ErrorTypeEnum.TRANSACTION_NOT_FOUND);
 
       jest.spyOn(service, 'selectOne').mockImplementationOnce(async () => new TransactionEntity());
+      jest.spyOn(service, 'genReverseState').mockImplementationOnce(() => new TransactionEntity());
+      jest.spyOn(service, 'processOne').mockImplementationOnce(async () => new TransactionEntity());
 
       return service.deleteOne({ id: '' }).catch((err) => {
         expect(err).toBeInstanceOf(NotFoundException);
