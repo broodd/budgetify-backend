@@ -80,18 +80,6 @@ export class TransactionEntity extends BaseEntity {
   /**
    * [description]
    */
-  @ApiProperty({ type: () => AccountEntity, nullable: true })
-  @ManyToOne(() => AccountEntity, {
-    onDelete: 'CASCADE',
-    nullable: true,
-    eager: true,
-  })
-  @JoinColumn()
-  public readonly toTransferAccount: Partial<AccountEntity>;
-
-  /**
-   * [description]
-   */
   @ApiHideProperty()
   @ManyToOne(() => UserEntity, {
     onDelete: 'CASCADE',
