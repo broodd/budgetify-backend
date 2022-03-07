@@ -10,12 +10,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { FloatIntColumnTransformer } from 'src/database/transformers';
+
 import { UserEntity } from 'src/modules/users/entities';
 import { AccountEntity } from 'src/modules/accounts/entities';
 import { CategoryEntity } from 'src/modules/categories/entities';
 
 export enum TransactionTypeEnum {
-  TRANSFER = 'TRANSFER',
   EXPENSE = 'EXPENSE',
   INCOME = 'INCOME',
 }
@@ -43,7 +44,12 @@ export class TransactionEntity extends BaseEntity {
    * [description]
    */
   @ApiProperty()
-  @Column({ type: 'float', nullable: false })
+  @Column({
+    type: 'bigint',
+    nullable: false,
+    unsigned: true,
+    transformer: FloatIntColumnTransformer,
+  })
   public readonly amount: number;
 
   /**

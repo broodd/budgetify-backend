@@ -14,7 +14,6 @@ import {
 
 import { ErrorTypeEnum } from 'src/common/enums';
 
-import { PaginationAccountsDto } from './dto';
 import { AccountEntity } from './entities';
 import { UserEntity } from '../users/entities';
 
@@ -85,17 +84,14 @@ export class AccountsService {
   public async selectAll(
     options: FindManyOptions<AccountEntity> = { loadEagerRelations: false },
     owner?: Partial<UserEntity>,
-  ): Promise<PaginationAccountsDto> {
+  ): Promise<AccountEntity[]> {
     const qb = this.find(classToPlain(options));
     if (options.where) qb.where(options.where);
     if (owner) qb.andWhere({ owner });
 
-    return qb
-      .getManyAndCount()
-      .then((data) => new PaginationAccountsDto(data))
-      .catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.ACCOUNTS_NOT_FOUND);
-      });
+    return qb.getMany().catch(() => {
+      throw new NotFoundException(ErrorTypeEnum.ACCOUNTS_NOT_FOUND);
+    });
   }
 
   /**
@@ -146,9 +142,9 @@ export class AccountsService {
     conditions: FindConditions<AccountEntity>,
     options: RemoveOptions = { transaction: false },
   ): Promise<AccountEntity> {
-    return this.accountEntityRepository.manager.transaction(async () => {
+    return this.accountEntityRepository.manager.transaction(async (transactionalEntityManager) => {
       const entity = await this.selectOne(conditions);
-      return this.accountEntityRepository.remove(entity, options).catch(() => {
+      return transactionalEntityManager.remove(entity, options).catch(() => {
         throw new NotFoundException(ErrorTypeEnum.ACCOUNT_NOT_FOUND);
       });
     });

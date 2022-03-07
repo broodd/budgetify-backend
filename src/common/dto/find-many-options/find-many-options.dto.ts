@@ -56,38 +56,4 @@ export class FindManyOptionsDto<Entity>
       ...(this.desc?.map((key) => ({ [key]: 'DESC' })) || []),
     );
   }
-
-  /**
-   * Offset (paginated) where from entities should be taken
-   */
-  @IsOptional()
-  @Min(1)
-  @ApiProperty({
-    type: String,
-    example: 1,
-    description: 'Offset (paginated) where from entities should be taken',
-  })
-  public readonly page?: number = 1;
-
-  /**
-   * Limit (paginated) - max number of entities should be taken
-   */
-  @IsOptional()
-  @Min(1)
-  @Max(100)
-  @ApiProperty({
-    type: String,
-    example: 5,
-    default: 50,
-    description: 'Limit (paginated) - max number of entities should be taken',
-  })
-  public readonly take?: number = 50;
-
-  /**
-   * Getter to form an object of skip. Available after calling classToPlain
-   */
-  @Expose({ toPlainOnly: true })
-  public get skip(): number {
-    return this.take * (this.page - 1);
-  }
 }

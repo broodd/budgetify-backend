@@ -7,7 +7,7 @@ import { ErrorTypeEnum } from 'src/common/enums';
 import { DatabaseModule } from 'src/database';
 import { ConfigModule } from 'src/config';
 
-import { PaginationUsersDto, SelectUsersDto } from './dto';
+import { SelectUsersDto } from './dto';
 import { UserEntity } from './entities';
 
 import { UsersService } from './users.service';
@@ -53,8 +53,7 @@ describe('UsersService', () => {
   describe('selectAll', () => {
     it('should be return users pagination entity', async () => {
       const received = await service.selectAll();
-      expect(received).toBeInstanceOf(PaginationUsersDto);
-      expect(received.count).toEqual(expect.any(Number));
+      expect(received).toHaveLength(expect.any(Number));
     });
 
     it('should be return not found exception', async () => {

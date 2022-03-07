@@ -19,12 +19,7 @@ import { ID } from 'src/common/dto';
 import { UserEntity } from '../users/entities';
 import { JwtAuthGuard } from '../auth/guards';
 
-import {
-  CreateCategoryDto,
-  UpdateCategoryDto,
-  SelectCategoriesDto,
-  PaginationCategoriesDto,
-} from './dto';
+import { CreateCategoryDto, UpdateCategoryDto, SelectCategoriesDto } from './dto';
 import { CategoriesService } from './categories.service';
 import { CategoryEntity } from './entities';
 
@@ -63,7 +58,7 @@ export class CategoriesController {
   public async selectAll(
     @Query() options: SelectCategoriesDto,
     @User() owner: UserEntity,
-  ): Promise<PaginationCategoriesDto> {
+  ): Promise<CategoryEntity[]> {
     return this.categoriesService.selectAll(options, owner);
   }
 

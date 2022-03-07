@@ -17,7 +17,7 @@ export class FindOneOptionsDto<Entity> implements FindOneOptions {
   @Transform(({ value }) => [].concat(value))
   @ApiProperty({
     type: [String],
-    example: ['id'],
+    example: [],
     description: 'Specifies what columns should be retrieved',
   })
   public readonly select?: [keyof Entity];

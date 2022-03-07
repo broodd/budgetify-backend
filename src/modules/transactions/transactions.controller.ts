@@ -20,12 +20,7 @@ import { ID } from 'src/common/dto';
 import { UserEntity } from '../users/entities';
 import { JwtAuthGuard } from '../auth/guards';
 
-import {
-  CreateTransactionDto,
-  UpdateTransactionDto,
-  SelectTransactionsDto,
-  PaginationTransactionsDto,
-} from './dto';
+import { CreateTransactionDto, UpdateTransactionDto, SelectTransactionsDto } from './dto';
 import { TransactionsService } from './transactions.service';
 import { TransactionEntity } from './entities';
 
@@ -66,7 +61,7 @@ export class TransactionsController {
   public async selectAll(
     @Query() options: SelectTransactionsDto,
     @User() owner: UserEntity,
-  ): Promise<PaginationTransactionsDto> {
+  ): Promise<TransactionEntity[]> {
     return this.transactionsService.selectAll(options, owner);
   }
 

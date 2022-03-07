@@ -5,11 +5,12 @@ import {
   ManyToOne,
   BaseEntity,
   JoinColumn,
-  FindOperator,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { FloatIntColumnTransformer } from 'src/database/transformers';
 
 import { UserEntity } from 'src/modules/users/entities';
 
@@ -37,16 +38,9 @@ export class AccountEntity extends BaseEntity {
    */
   @ApiProperty()
   @Column({
-    type: 'numeric',
-    default: 0,
+    type: 'bigint',
     nullable: false,
-    precision: 10,
-    scale: 2,
-    transformer: {
-      to: (value: string | FindOperator<AccountEntity>): string | FindOperator<AccountEntity> =>
-        value,
-      from: (value: string) => parseFloat(value),
-    },
+    transformer: FloatIntColumnTransformer,
   })
   public readonly balance: number;
 
