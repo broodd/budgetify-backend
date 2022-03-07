@@ -7,7 +7,7 @@ import { ErrorTypeEnum } from 'src/common/enums';
 import { DatabaseModule } from 'src/database';
 import { ConfigModule } from 'src/config';
 
-import { PaginationCategoriesDto, SelectCategoriesDto } from './dto';
+import { SelectCategoriesDto } from './dto';
 import { CategoryEntity, CategoryTypeEnum } from './entities';
 
 import { CategoriesService } from './categories.service';
@@ -58,8 +58,7 @@ describe('CategoriesService', () => {
   describe('selectAll', () => {
     it('should be return categorys pagination entity', async () => {
       const received = await service.selectAll();
-      expect(received).toBeInstanceOf(PaginationCategoriesDto);
-      expect(received.count).toEqual(expect.any(Number));
+      expect(received).toHaveLength(expect.any(Number));
     });
 
     it('should be return not found exception', async () => {

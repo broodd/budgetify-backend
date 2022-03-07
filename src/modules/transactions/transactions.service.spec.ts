@@ -11,7 +11,7 @@ import { AccountEntity } from '../accounts/entities';
 import { CategoriesModule } from '../categories';
 import { AccountsModule } from '../accounts';
 
-import { PaginationTransactionsDto, SelectTransactionsDto } from './dto';
+import { SelectTransactionsDto } from './dto';
 import { TransactionEntity, TransactionTypeEnum } from './entities';
 
 import { TransactionsService } from './transactions.service';
@@ -73,8 +73,7 @@ describe('TransactionsService', () => {
   describe('selectAll', () => {
     it('should be return transactions pagination entity', async () => {
       const received = await service.selectAll();
-      expect(received).toBeInstanceOf(PaginationTransactionsDto);
-      expect(received.count).toEqual(expect.any(Number));
+      expect(received).toHaveLength(expect.any(Number));
     });
 
     it('should be return not found exception', async () => {

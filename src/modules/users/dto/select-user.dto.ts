@@ -1,5 +1,4 @@
 import { FindOneOptionsDto } from 'src/common/dto';
-
 import { UserEntity } from '../entities';
 
 /**

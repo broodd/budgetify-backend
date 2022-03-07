@@ -19,7 +19,6 @@ import { CategoriesService } from '../categories';
 import { UserEntity } from '../users/entities';
 import { AccountsService } from '../accounts';
 
-import { PaginationTransactionsDto } from './dto';
 import { TransactionEntity, TransactionTypeEnum } from './entities';
 
 /**
@@ -49,30 +48,20 @@ export class TransactionsService {
     owner: Partial<UserEntity>,
   ): Promise<Partial<TransactionEntity>> {
     const { type, amount, account } = entityLike;
-    let entityAmount: number;
+    const intAmount = amount * 100;
 
     if (type === TransactionTypeEnum.EXPENSE) {
-      await this.accountEntityRepository.decrement(
-        { id: account.id, owner },
-        'balance',
-        Math.abs(amount),
-      );
-      entityAmount = -Math.abs(amount);
+      await this.accountEntityRepository.decrement({ id: account.id, owner }, 'balance', intAmount);
     } else {
-      await this.accountEntityRepository.increment(
-        { id: account.id, owner },
-        'balance',
-        Math.abs(amount),
-      );
-      entityAmount = Math.abs(amount);
+      await this.accountEntityRepository.increment({ id: account.id, owner }, 'balance', intAmount);
     }
 
-    return plainToClass(TransactionEntity, { ...entityLike, amount: entityAmount });
+    return entityLike;
   }
 
   public genReverseState(entity: Partial<TransactionEntity>): Partial<TransactionEntity> {
     const category = { id: entity.category.id };
-    const account = { id: entity.category.id };
+    const account = { id: entity.account.id };
     const type =
       entity.type === TransactionTypeEnum.EXPENSE
         ? TransactionTypeEnum.INCOME
@@ -150,17 +139,14 @@ export class TransactionsService {
   public async selectAll(
     options: FindManyOptions<TransactionEntity> = { loadEagerRelations: false },
     owner?: Partial<UserEntity>,
-  ): Promise<PaginationTransactionsDto> {
+  ): Promise<TransactionEntity[]> {
     const qb = this.find(classToPlain(options));
     if (options.where) qb.where(options.where);
     if (owner) qb.andWhere({ owner });
 
-    return qb
-      .getManyAndCount()
-      .then((data) => new PaginationTransactionsDto(data))
-      .catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.TRANSACTIONS_NOT_FOUND);
-      });
+    return qb.getMany().catch(() => {
+      throw new NotFoundException(ErrorTypeEnum.TRANSACTIONS_NOT_FOUND);
+    });
   }
 
   /**
@@ -219,16 +205,18 @@ export class TransactionsService {
     options: RemoveOptions = { transaction: false },
   ): Promise<TransactionEntity> {
     const { owner } = conditions;
-    return this.transactionEntityRepository.manager.transaction(async () => {
-      const entity = await this.selectOne(conditions, {
-        relations: ['category', 'account'],
-      });
+    return this.transactionEntityRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        const entity = await this.selectOne(conditions, {
+          relations: ['category', 'account'],
+        });
 
-      await this.processOne(this.genReverseState(entity), owner);
+        await this.processOne(this.genReverseState(entity), owner);
 
-      return this.transactionEntityRepository.remove(entity, options).catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.TRANSACTION_NOT_FOUND);
-      });
-    });
+        return transactionalEntityManager.remove(entity, options).catch(() => {
+          throw new NotFoundException(ErrorTypeEnum.TRANSACTION_NOT_FOUND);
+        });
+      },
+    );
   }
 }

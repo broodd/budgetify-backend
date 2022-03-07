@@ -14,7 +14,6 @@ import {
 
 import { ErrorTypeEnum } from 'src/common/enums';
 
-import { PaginationUsersDto } from './dto';
 import { UserEntity } from './entities';
 
 /**
@@ -81,15 +80,12 @@ export class UsersService {
    */
   public async selectAll(
     options: FindManyOptions<UserEntity> = { loadEagerRelations: false },
-  ): Promise<PaginationUsersDto> {
+  ): Promise<UserEntity[]> {
     const qb = this.find(classToPlain(options));
     if (options.where) qb.where(options.where);
-    return qb
-      .getManyAndCount()
-      .then((data) => new PaginationUsersDto(data))
-      .catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.USERS_NOT_FOUND);
-      });
+    return qb.getMany().catch(() => {
+      throw new NotFoundException(ErrorTypeEnum.USERS_NOT_FOUND);
+    });
   }
 
   /**
@@ -140,9 +136,9 @@ export class UsersService {
     conditions: FindConditions<UserEntity>,
     options: RemoveOptions = { transaction: false },
   ): Promise<UserEntity> {
-    return this.userEntityRepository.manager.transaction(async () => {
+    return this.userEntityRepository.manager.transaction(async (transactionalEntityManager) => {
       const entity = await this.selectOne(conditions);
-      return this.userEntityRepository.remove(entity, options).catch(() => {
+      return transactionalEntityManager.remove(entity, options).catch(() => {
         throw new NotFoundException(ErrorTypeEnum.USER_NOT_FOUND);
       });
     });

@@ -1,6 +1,5 @@
 import { FindOneOptionsDto } from 'src/common/dto';
-
-import { UserEntity } from '../../users/entities';
+import { UserEntity } from 'src/modules/users/entities';
 
 /**
  * [description]

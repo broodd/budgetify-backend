@@ -1,3 +1,5 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEnum,
@@ -7,9 +9,8 @@ import {
   NotEquals,
   IsOptional,
   ValidateNested,
+  IsPositive,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, TransformFnParams, Type } from 'class-transformer';
 
 import { ID } from 'src/common/dto';
 
@@ -18,11 +19,6 @@ import { TransactionTypeEnum } from '../entities';
 enum CreateTransactionType {
   EXPENSE = TransactionTypeEnum.EXPENSE,
   INCOME = TransactionTypeEnum.INCOME,
-}
-
-interface AmountTransformParams extends TransformFnParams {
-  value: number;
-  obj: Partial<CreateTransactionDto>;
 }
 
 /**
@@ -40,10 +36,8 @@ export class CreateTransactionDto {
    * [description]
    */
   @IsNumber({ maxDecimalPlaces: 2 })
+  @IsPositive()
   @NotEquals(0)
-  @Transform(({ value, obj }: AmountTransformParams) =>
-    obj.type === TransactionTypeEnum.EXPENSE ? -Math.abs(value) : Math.abs(value),
-  )
   @ApiProperty({ example: 1 })
   public readonly amount: number;
 

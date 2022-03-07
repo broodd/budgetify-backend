@@ -14,7 +14,6 @@ import {
 
 import { ErrorTypeEnum } from 'src/common/enums';
 
-import { PaginationCategoriesDto } from './dto';
 import { CategoryEntity } from './entities';
 import { UserEntity } from '../users/entities';
 
@@ -85,17 +84,14 @@ export class CategoriesService {
   public async selectAll(
     options: FindManyOptions<CategoryEntity> = { loadEagerRelations: false },
     owner?: Partial<UserEntity>,
-  ): Promise<PaginationCategoriesDto> {
+  ): Promise<CategoryEntity[]> {
     const qb = this.find(classToPlain(options));
     if (options.where) qb.where(options.where);
     if (owner) qb.andWhere({ owner });
 
-    return qb
-      .getManyAndCount()
-      .then((data) => new PaginationCategoriesDto(data))
-      .catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.CATEGORIES_NOT_FOUND);
-      });
+    return qb.getMany().catch(() => {
+      throw new NotFoundException(ErrorTypeEnum.CATEGORIES_NOT_FOUND);
+    });
   }
 
   /**
@@ -146,9 +142,9 @@ export class CategoriesService {
     conditions: FindConditions<CategoryEntity>,
     options: RemoveOptions = { transaction: false },
   ): Promise<CategoryEntity> {
-    return this.categoryEntityRepository.manager.transaction(async () => {
+    return this.categoryEntityRepository.manager.transaction(async (transactionalEntityManager) => {
       const entity = await this.selectOne(conditions);
-      return this.categoryEntityRepository.remove(entity, options).catch(() => {
+      return transactionalEntityManager.remove(entity, options).catch(() => {
         throw new NotFoundException(ErrorTypeEnum.CATEGORY_NOT_FOUND);
       });
     });
