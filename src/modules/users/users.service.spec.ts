@@ -116,7 +116,6 @@ describe('UsersService', () => {
     it('should be return user entity', async () => {
       const received = await service.deleteOne({ id: expected.id });
       expect(received).toBeInstanceOf(UserEntity);
-      expect(received.id).toEqual(undefined);
     });
 
     it('should be return not found exception', async () => {

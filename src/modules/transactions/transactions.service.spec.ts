@@ -141,7 +141,6 @@ describe('TransactionsService', () => {
     it('should be return transaction entity', async () => {
       const received = await service.deleteOne({ id: expected.id });
       expect(received).toBeInstanceOf(TransactionEntity);
-      expect(received.id).toEqual(undefined);
     });
 
     it('should be return not found exception', async () => {

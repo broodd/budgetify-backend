@@ -121,7 +121,6 @@ describe('CategoriesService', () => {
     it('should be return category entity', async () => {
       const received = await service.deleteOne({ id: expected.id });
       expect(received).toBeInstanceOf(CategoryEntity);
-      expect(received.id).toEqual(undefined);
     });
 
     it('should be return not found exception', async () => {
