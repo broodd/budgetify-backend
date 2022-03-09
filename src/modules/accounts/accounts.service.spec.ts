@@ -119,7 +119,6 @@ describe('AccountsService', () => {
     it('should be return account entity', async () => {
       const received = await service.deleteOne({ id: expected.id });
       expect(received).toBeInstanceOf(AccountEntity);
-      expect(received.id).toEqual(undefined);
     });
 
     it('should be return not found exception', async () => {

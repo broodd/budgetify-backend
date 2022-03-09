@@ -4,7 +4,6 @@ import { classToPlain } from 'class-transformer';
 import {
   Repository,
   SaveOptions,
-  RemoveOptions,
   FindConditions,
   FindOneOptions,
   FindManyOptions,
@@ -138,15 +137,18 @@ export class CategoriesService {
    * @param conditions
    * @param options
    */
-  public async deleteOne(
-    conditions: FindConditions<CategoryEntity>,
-    options: RemoveOptions = { transaction: false },
-  ): Promise<CategoryEntity> {
+  public async deleteOne(conditions: FindConditions<CategoryEntity>): Promise<CategoryEntity> {
     return this.categoryEntityRepository.manager.transaction(async (transactionalEntityManager) => {
       const entity = await this.selectOne(conditions);
-      return transactionalEntityManager.remove(entity, options).catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.CATEGORY_NOT_FOUND);
-      });
+      await transactionalEntityManager
+        .delete(CategoryEntity, conditions)
+        .then(({ affected }) => {
+          if (!affected) throw new NotFoundException(ErrorTypeEnum.CATEGORY_NOT_FOUND);
+        })
+        .catch(() => {
+          throw new NotFoundException(ErrorTypeEnum.CATEGORY_NOT_FOUND);
+        });
+      return entity;
     });
   }
 }

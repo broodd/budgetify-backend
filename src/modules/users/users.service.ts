@@ -4,7 +4,6 @@ import { classToPlain } from 'class-transformer';
 import {
   Repository,
   SaveOptions,
-  RemoveOptions,
   FindConditions,
   FindOneOptions,
   FindManyOptions,
@@ -132,15 +131,18 @@ export class UsersService {
    * @param conditions
    * @param options
    */
-  public async deleteOne(
-    conditions: FindConditions<UserEntity>,
-    options: RemoveOptions = { transaction: false },
-  ): Promise<UserEntity> {
+  public async deleteOne(conditions: FindConditions<UserEntity>): Promise<UserEntity> {
     return this.userEntityRepository.manager.transaction(async (transactionalEntityManager) => {
       const entity = await this.selectOne(conditions);
-      return transactionalEntityManager.remove(entity, options).catch(() => {
-        throw new NotFoundException(ErrorTypeEnum.USER_NOT_FOUND);
-      });
+      await transactionalEntityManager
+        .delete(UserEntity, conditions)
+        .then(({ affected }) => {
+          if (!affected) throw new NotFoundException(ErrorTypeEnum.USER_NOT_FOUND);
+        })
+        .catch(() => {
+          throw new NotFoundException(ErrorTypeEnum.USER_NOT_FOUND);
+        });
+      return entity;
     });
   }
 }

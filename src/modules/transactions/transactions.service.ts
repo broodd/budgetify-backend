@@ -200,10 +200,7 @@ export class TransactionsService {
    * @param conditions
    * @param options
    */
-  public async deleteOne(
-    conditions: Partial<TransactionEntity>,
-    options: RemoveOptions = { transaction: false },
-  ): Promise<TransactionEntity> {
+  public async deleteOne(conditions: Partial<TransactionEntity>): Promise<TransactionEntity> {
     const { owner } = conditions;
     return this.transactionEntityRepository.manager.transaction(
       async (transactionalEntityManager) => {
@@ -213,9 +210,20 @@ export class TransactionsService {
 
         await this.processOne(this.genReverseState(entity), owner);
 
-        return transactionalEntityManager.remove(entity, options).catch(() => {
-          throw new NotFoundException(ErrorTypeEnum.TRANSACTION_NOT_FOUND);
+        const entityReversed = await this.selectOne(conditions, {
+          relations: ['category', 'account'],
         });
+
+        await transactionalEntityManager
+          .delete(TransactionEntity, conditions)
+          .then(({ affected }) => {
+            if (!affected) throw new NotFoundException(ErrorTypeEnum.TRANSACTION_NOT_FOUND);
+          })
+          .catch(() => {
+            throw new NotFoundException(ErrorTypeEnum.TRANSACTION_NOT_FOUND);
+          });
+
+        return entityReversed;
       },
     );
   }

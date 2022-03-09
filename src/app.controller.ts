@@ -1,3 +1,4 @@
+import { Transport, RedisOptions } from '@nestjs/microservices';
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -7,6 +8,7 @@ import {
   DiskHealthIndicator,
   MemoryHealthIndicator,
   TypeOrmHealthIndicator,
+  MicroserviceHealthIndicator,
 } from '@nestjs/terminus';
 
 import { ConfigService } from './config';
@@ -32,6 +34,7 @@ export class AppController {
    * @param disk
    */
   constructor(
+    private readonly microservice: MicroserviceHealthIndicator,
     private readonly configService: ConfigService,
     private readonly typeorm: TypeOrmHealthIndicator,
     private readonly memory: MemoryHealthIndicator,
@@ -50,6 +53,20 @@ export class AppController {
       () => this.memory.checkHeap('memory_heap', 2 ** 30),
       () => this.memory.checkRSS('memory_rss', 2 ** 31),
       () => this.typeorm.pingCheck('database'),
+      () =>
+        this.microservice.pingCheck<RedisOptions>('redis', {
+          transport: Transport.REDIS,
+          options: Object.assign(
+            {
+              host: this.configService.get<string>('REDIS_HOST'),
+              port: this.configService.get<number>('REDIS_PORT'),
+            },
+            this.configService.get('REDIS_TLS') && {
+              auth_pass: this.configService.get<string>('REDIS_PASSWORD'),
+              tls: { rejectUnauthorized: false },
+            },
+          ),
+        }),
     ]);
   }
 }
