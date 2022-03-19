@@ -1,5 +1,7 @@
-import { IsNumber, MaxLength, MinLength } from 'class-validator';
+import { IsEnum, IsNumber, MaxLength, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { CurrencyEnum } from 'src/common/enums';
 
 /**
  * [description]
@@ -19,4 +21,11 @@ export class CreateAccountDto {
   @IsNumber()
   @ApiProperty({ example: 0 })
   public readonly balance: number;
+
+  /**
+   * [description]
+   */
+  @IsEnum(CurrencyEnum)
+  @ApiProperty({ enum: CurrencyEnum })
+  public readonly currencyCode: CurrencyEnum;
 }

@@ -4,7 +4,6 @@ import { classToPlain, plainToClass } from 'class-transformer';
 import {
   Repository,
   SaveOptions,
-  RemoveOptions,
   FindConditions,
   FindOneOptions,
   FindManyOptions,

@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { CurrencyEnum } from 'src/common/enums';
 import { FloatIntColumnTransformer } from 'src/database/transformers';
 
 import { UserEntity } from 'src/modules/users/entities';
@@ -32,6 +33,13 @@ export class AccountEntity extends BaseEntity {
   @ApiProperty({ maxLength: 64, nullable: false })
   @Column({ type: 'varchar', length: 64, nullable: false })
   public readonly name: string;
+
+  /**
+   * [description]
+   */
+  @ApiProperty({ enum: CurrencyEnum, default: CurrencyEnum.UAH })
+  @Column({ type: 'enum', enum: CurrencyEnum, default: CurrencyEnum.UAH })
+  public readonly currencyCode: CurrencyEnum;
 
   /**
    * [description]

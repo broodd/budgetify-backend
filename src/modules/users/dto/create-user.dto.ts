@@ -1,5 +1,7 @@
-import { IsEmail, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, MaxLength, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { CurrencyEnum } from 'src/common/enums';
 
 /**
  * [description]
@@ -19,4 +21,12 @@ export class CreateUserDto {
   @MaxLength(64)
   @ApiProperty({ minLength: 8, maxLength: 64, example: 'password' })
   public readonly password: string;
+
+  /**
+   * [description]
+   */
+  @IsOptional()
+  @IsEnum(CurrencyEnum)
+  @ApiProperty({ enum: CurrencyEnum })
+  public readonly baseCurrency: CurrencyEnum;
 }

@@ -1,4 +1,5 @@
 import { BadRequestException, CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { FindConditions } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 
@@ -14,8 +15,10 @@ import { UsersService } from '../users';
 import {
   CredentialsDto,
   JwtResponseDto,
+  UpdateEmailDto,
   CreateProfileDto,
   ResetPasswordDto,
+  UpdatePasswordDto,
   SendResetPasswordDto,
   ConfirmationEmailDto,
 } from './dto';
@@ -65,8 +68,9 @@ export class AuthService {
    */
   public async createToken({ email, password }: CredentialsDto): Promise<JwtResponseDto> {
     const user = await this.validateUser({ email });
-    if (bcrypt.compareSync(password, user.password)) return this.generateToken(user);
-    throw new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
+    if (!(await this.validatePassword(password, user.password)))
+      throw new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
+    return this.generateToken(user);
   }
 
   /**
@@ -82,12 +86,23 @@ export class AuthService {
    * [description]
    * @param data
    */
-  public async validateUser(data: Partial<UserEntity>): Promise<UserEntity> {
+  public async validateUser(conditions: FindConditions<UserEntity>): Promise<UserEntity> {
     return this.usersService
-      .selectOne(data, { loadEagerRelations: false, select: ['id', 'password'] })
+      .selectOne(conditions, { loadEagerRelations: false, select: ['id', 'password'] })
       .catch(() => {
         throw new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
       });
+  }
+
+  /**
+   * [description]
+   * @param data
+   * @param encrypted
+   */
+  public async validatePassword(data: string, encrypted: string): Promise<boolean> {
+    return bcrypt.compare(data, encrypted).catch(() => {
+      throw new BadRequestException(ErrorTypeEnum.AUTH_PASSWORDS_DO_NOT_MATCH);
+    });
   }
 
   /**
@@ -118,7 +133,7 @@ export class AuthService {
       select: ['id'],
     });
 
-    const code = (await this.cacheManager.get<string>(id)) || this.generateCode();
+    const code = this.generateCode();
     this.cacheManager.set<string>(id, code);
 
     await this.sendGridService.sendMail({
@@ -136,10 +151,33 @@ export class AuthService {
   public async resetPassword(data: ResetPasswordDto): Promise<void> {
     const { id, password } = await this.confirmationEmailCode(data);
 
-    if (bcrypt.compareSync(data.password, password))
+    if (await this.validatePassword(data.password, password))
       throw new BadRequestException(ErrorTypeEnum.NEW_PASSWORD_AND_OLD_PASSWORD_CANNOT_BE_SAME);
 
     await this.cacheManager.del(id);
     await this.usersService.updateOne({ id }, { password: data.password });
+  }
+
+  /**
+   * [description]
+   * @param data
+   */
+  public async updatePassword(
+    data: UpdatePasswordDto,
+    user: Partial<UserEntity>,
+  ): Promise<UserEntity> {
+    if (!(await this.validatePassword(data.oldPassword, user.password)))
+      throw new BadRequestException(ErrorTypeEnum.AUTH_PASSWORDS_DO_NOT_MATCH);
+    return this.usersService.updateOne(user, { password: data.password });
+  }
+
+  /**
+   * [description]
+   * @param data
+   */
+  public async updateEmail(data: UpdateEmailDto, user: Partial<UserEntity>): Promise<UserEntity> {
+    if (!(await this.validatePassword(data.password, user.password)))
+      throw new BadRequestException(ErrorTypeEnum.AUTH_PASSWORDS_DO_NOT_MATCH);
+    return this.usersService.updateOne(user, { email: data.email });
   }
 }
