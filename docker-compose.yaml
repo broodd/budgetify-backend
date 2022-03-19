@@ -7,9 +7,9 @@ services:
     networks:
       - network
     environment:
-      POSTGRES_DB: database
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: budgetify
+      POSTGRES_USER: budgetify
+      POSTGRES_PASSWORD: budgetify
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     healthcheck:

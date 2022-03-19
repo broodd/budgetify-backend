@@ -4,6 +4,7 @@ import {
   Post,
   Body,
   Query,
+  Patch,
   UseGuards,
   Controller,
   UseInterceptors,
@@ -18,9 +19,12 @@ import { UsersService } from '../users';
 import {
   JwtResponseDto,
   CredentialsDto,
+  UpdateEmailDto,
   CreateProfileDto,
   SelectProfileDto,
   ResetPasswordDto,
+  UpdateProfileDto,
+  UpdatePasswordDto,
   SendResetPasswordDto,
   ConfirmationEmailDto,
 } from './dto';
@@ -98,9 +102,54 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   public async selectUser(
-    @User() { id }: UserEntity,
     @Query() options: SelectProfileDto,
+    @User() { id }: UserEntity,
   ): Promise<UserEntity> {
     return this.usersService.selectOne({ id }, options);
+  }
+
+  /**
+   * [description]
+   * @param user
+   * @param data
+   */
+  @Patch('profile')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  public async updateUser(
+    @Body() data: UpdateProfileDto,
+    @User() user: UserEntity,
+  ): Promise<UserEntity> {
+    return this.usersService.updateOne(user, data);
+  }
+
+  /**
+   * [description]
+   * @param user
+   * @param data
+   */
+  @Patch('profile/password')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  public async updateUserPassword(
+    @Body() data: UpdatePasswordDto,
+    @User() user: UserEntity,
+  ): Promise<UserEntity> {
+    return this.authService.updatePassword(data, user);
+  }
+
+  /**
+   * [description]
+   * @param user
+   * @param data
+   */
+  @Patch('profile/email')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  public async updateUserEmail(
+    @Body() data: UpdateEmailDto,
+    @User() user: UserEntity,
+  ): Promise<UserEntity> {
+    return this.authService.updateEmail(data, user);
   }
 }

@@ -4,4 +4,8 @@ import { CreateUserDto } from '../../users/dto';
 /**
  * [description]
  */
-export class CreateProfileDto extends PickType(CreateUserDto, ['password', 'email']) {}
+export class CreateProfileDto extends PickType(CreateUserDto, [
+  'password',
+  'email',
+  'baseCurrency',
+]) {}

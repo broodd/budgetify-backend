@@ -8,11 +8,12 @@ import {
   MinLength,
   NotEquals,
   IsOptional,
-  ValidateNested,
   IsPositive,
+  ValidateNested,
 } from 'class-validator';
 
 import { ID } from 'src/common/dto';
+import { CurrencyEnum } from 'src/common/enums';
 
 import { TransactionTypeEnum } from '../entities';
 
@@ -40,6 +41,14 @@ export class CreateTransactionDto {
   @NotEquals(0)
   @ApiProperty({ example: 1 })
   public readonly amount: number;
+
+  /**
+   * [description]
+   */
+  @IsOptional()
+  @IsEnum(CurrencyEnum)
+  @ApiProperty({ enum: CurrencyEnum })
+  public readonly currencyCode: CurrencyEnum;
 
   /**
    * [description]

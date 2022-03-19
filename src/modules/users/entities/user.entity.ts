@@ -1,4 +1,5 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import * as bcrypt from 'bcrypt';
 import {
   Column,
   Entity,
@@ -8,11 +9,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  OneToMany,
 } from 'typeorm';
 
-import * as bcrypt from 'bcrypt';
-import { AccountEntity } from 'src/modules/accounts/entities';
+import { CurrencyEnum } from 'src/common/enums';
 
 /**
  * [description]
@@ -43,13 +42,9 @@ export class UserEntity extends BaseEntity {
   /**
    * [description]
    */
-  @ApiHideProperty()
-  @OneToMany(() => AccountEntity, ({ owner }) => owner, {
-    nullable: true,
-    cascade: true,
-    eager: false,
-  })
-  public readonly files?: Partial<AccountEntity>;
+  @ApiProperty({ enum: CurrencyEnum, default: CurrencyEnum.UAH })
+  @Column({ type: 'enum', enum: CurrencyEnum, default: CurrencyEnum.UAH })
+  public readonly baseCurrency: CurrencyEnum;
 
   /**
    * [description]
