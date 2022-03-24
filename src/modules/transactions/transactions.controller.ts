@@ -49,7 +49,8 @@ export class TransactionsController {
     @User() owner: UserEntity,
   ): Promise<TransactionEntity> {
     return this.transactionsService.createOne(
-      plainToClass(CreateTransactionDto, { ...data, owner }),
+      plainToClass(CreateTransactionDto, { ...data, owner: { id: owner.id } }),
+      owner,
     );
   }
 
@@ -62,7 +63,7 @@ export class TransactionsController {
     @Query() options: SelectTransactionsDto,
     @User() owner: UserEntity,
   ): Promise<TransactionEntity[]> {
-    return this.transactionsService.selectAll(options, owner);
+    return this.transactionsService.selectAllWithBaseBalance(owner, options);
   }
 
   /**
@@ -76,7 +77,11 @@ export class TransactionsController {
     @Body() data: UpdateTransactionDto,
     @User() owner: UserEntity,
   ): Promise<TransactionEntity> {
-    return this.transactionsService.updateOne({ ...conditions, owner }, data);
+    return this.transactionsService.updateOne(
+      { ...conditions, owner: { id: owner.id } },
+      owner,
+      data,
+    );
   }
 
   /**
@@ -88,6 +93,6 @@ export class TransactionsController {
     @Param() conditions: ID,
     @User() owner: UserEntity,
   ): Promise<TransactionEntity> {
-    return this.transactionsService.deleteOne({ ...conditions, owner });
+    return this.transactionsService.deleteOne({ ...conditions, owner: { id: owner.id } }, owner);
   }
 }

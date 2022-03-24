@@ -5,12 +5,7 @@ import { AccountsController } from './accounts.controller';
 import { AccountsService } from './accounts.service';
 
 import { AccountEntity } from './entities';
-import {
-  CreateAccountDto,
-  UpdateAccountDto,
-  SelectAccountsDto,
-  PaginationAccountsDto,
-} from './dto';
+import { CreateAccountDto, UpdateAccountDto, SelectAccountsDto } from './dto';
 import { UserEntity } from '../users/entities';
 
 describe('AccountsController', () => {
@@ -33,8 +28,10 @@ describe('AccountsController', () => {
           provide: AccountsService,
           useValue: {
             createOne: (data: Partial<AccountEntity>) => classToClassFromExist(data, owner),
-            selectAll: () => new PaginationAccountsDto([[owner], 1]),
+            selectAll: () => [[owner], 1],
+            selectAllWithBaseBalance: () => [[owner], 1],
             selectOne: () => new AccountEntity(),
+            selectOneWithBaseBalance: () => new AccountEntity(),
             updateOne: (owner: AccountEntity, data: Partial<AccountEntity>) =>
               plainToClass(AccountEntity, { ...owner, ...data }),
             deleteOne: () => new AccountEntity(),
@@ -60,7 +57,7 @@ describe('AccountsController', () => {
   describe('selectAll', () => {
     it('should be return account entity', async () => {
       const received = await controller.selectAll(optionsAll, user);
-      expect(received).toBeInstanceOf(PaginationAccountsDto);
+      expect(received.length).toEqual(expect.any(Number));
     });
   });
 

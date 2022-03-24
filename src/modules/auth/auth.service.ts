@@ -88,7 +88,10 @@ export class AuthService {
    */
   public async validateUser(conditions: FindConditions<UserEntity>): Promise<UserEntity> {
     return this.usersService
-      .selectOne(conditions, { loadEagerRelations: false, select: ['id', 'password'] })
+      .selectOne(conditions, {
+        loadEagerRelations: false,
+        select: ['id', 'password', 'baseCurrency'],
+      })
       .catch(() => {
         throw new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
       });

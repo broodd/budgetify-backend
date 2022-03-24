@@ -55,6 +55,12 @@ export class AccountEntity extends BaseEntity {
   /**
    * [description]
    */
+  @ApiProperty()
+  public readonly balanceInBaseCurrency?: number;
+
+  /**
+   * [description]
+   */
   @ApiHideProperty()
   @ManyToOne(() => UserEntity, {
     onDelete: 'CASCADE',

@@ -5,12 +5,7 @@ import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
 
 import { TransactionEntity } from './entities';
-import {
-  CreateTransactionDto,
-  UpdateTransactionDto,
-  SelectTransactionsDto,
-  PaginationTransactionsDto,
-} from './dto';
+import { CreateTransactionDto, UpdateTransactionDto, SelectTransactionsDto } from './dto';
 import { UserEntity } from '../users/entities';
 
 describe('TransactionsController', () => {
@@ -33,8 +28,10 @@ describe('TransactionsController', () => {
           provide: TransactionsService,
           useValue: {
             createOne: (data: Partial<TransactionEntity>) => classToClassFromExist(data, owner),
-            selectAll: () => new PaginationTransactionsDto([[owner], 1]),
+            selectAll: () => [[owner], 1],
+            selectAllWithBaseBalance: () => [[owner], 1],
             selectOne: () => new TransactionEntity(),
+            selectOneWithBaseBalance: () => new TransactionEntity(),
             updateOne: (owner: TransactionEntity, data: Partial<TransactionEntity>) =>
               plainToClass(TransactionEntity, { ...owner, ...data }),
             deleteOne: () => new TransactionEntity(),
@@ -60,7 +57,7 @@ describe('TransactionsController', () => {
   describe('selectAll', () => {
     it('should be return transaction entity', async () => {
       const received = await controller.selectAll(optionsAll, user);
-      expect(received).toBeInstanceOf(PaginationTransactionsDto);
+      expect(received.length).toEqual(expect.any(Number));
     });
   });
 

@@ -47,7 +47,7 @@ export class AccountsController {
     @Body() data: CreateAccountDto,
     @User() owner: UserEntity,
   ): Promise<AccountEntity> {
-    return this.accountsService.createOne({ ...data, owner });
+    return this.accountsService.createOne({ ...data, owner: { id: owner.id } }, owner);
   }
 
   /**
@@ -59,7 +59,7 @@ export class AccountsController {
     @Query() options: SelectAccountsDto,
     @User() owner: UserEntity,
   ): Promise<AccountEntity[]> {
-    return this.accountsService.selectAll(options, owner);
+    return this.accountsService.selectAllWithBaseBalance(owner, options);
   }
 
   /**
@@ -73,7 +73,7 @@ export class AccountsController {
     @Body() data: UpdateAccountDto,
     @User() owner: UserEntity,
   ): Promise<AccountEntity> {
-    return this.accountsService.updateOne({ ...conditions, owner }, data);
+    return this.accountsService.updateOne({ ...conditions, owner: { id: owner.id } }, owner, data);
   }
 
   /**
@@ -85,6 +85,6 @@ export class AccountsController {
     @Param() conditions: ID,
     @User() owner: UserEntity,
   ): Promise<AccountEntity> {
-    return this.accountsService.deleteOne({ ...conditions, owner });
+    return this.accountsService.deleteOne({ ...conditions, owner: { id: owner.id } }, owner);
   }
 }
