@@ -5,12 +5,7 @@ import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
 
 import { CategoryEntity } from './entities';
-import {
-  CreateCategoryDto,
-  UpdateCategoryDto,
-  SelectCategoriesDto,
-  PaginationCategoriesDto,
-} from './dto';
+import { CreateCategoryDto, UpdateCategoryDto, SelectCategoriesDto } from './dto';
 import { UserEntity } from '../users/entities';
 
 describe('CategoriesController', () => {
@@ -33,7 +28,7 @@ describe('CategoriesController', () => {
           provide: CategoriesService,
           useValue: {
             createOne: (data: Partial<CategoryEntity>) => classToClassFromExist(data, owner),
-            selectAll: () => new PaginationCategoriesDto([[owner], 1]),
+            selectAll: () => [[owner], 1],
             selectOne: () => new CategoryEntity(),
             updateOne: (owner: CategoryEntity, data: Partial<CategoryEntity>) =>
               plainToClass(CategoryEntity, { ...owner, ...data }),
@@ -60,7 +55,7 @@ describe('CategoriesController', () => {
   describe('selectAll', () => {
     it('should be return category entity', async () => {
       const received = await controller.selectAll(optionsAll, user);
-      expect(received).toBeInstanceOf(PaginationCategoriesDto);
+      expect(received.length).toEqual(expect.any(Number));
     });
   });
 

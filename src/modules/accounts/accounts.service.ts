@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { classToPlain } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 import {
   Repository,
   SaveOptions,
@@ -11,7 +11,10 @@ import {
   SelectQueryBuilder,
 } from 'typeorm';
 
-import { ErrorTypeEnum } from 'src/common/enums';
+import { CurrencyEnum, ErrorTypeEnum } from 'src/common/enums';
+
+import { CurrencyRateCacheRecord } from '../exchangerate/types';
+import { ExchangeRateService } from '../exchangerate';
 
 import { AccountEntity } from './entities';
 import { UserEntity } from '../users/entities';
@@ -28,7 +31,25 @@ export class AccountsService {
   constructor(
     @InjectRepository(AccountEntity)
     public readonly accountEntityRepository: Repository<AccountEntity>,
+    public readonly exchangeRateService: ExchangeRateService,
   ) {}
+
+  public addBalanceInBaseCurrency({
+    rates,
+    account,
+    baseCurrency,
+  }: {
+    rates: CurrencyRateCacheRecord;
+    account: Partial<AccountEntity>;
+    baseCurrency: CurrencyEnum;
+  }): AccountEntity {
+    const currencyRate = rates[account.currencyCode][baseCurrency];
+    const balanceInBaseCurrency = parseFloat((currencyRate * account.balance).toFixed(2));
+    return plainToClass(AccountEntity, {
+      ...account,
+      balanceInBaseCurrency,
+    });
+  }
 
   /**
    * [description]
@@ -37,6 +58,7 @@ export class AccountsService {
    */
   public async createOne(
     entityLike: Partial<AccountEntity>,
+    owner: Partial<UserEntity>,
     options: SaveOptions = { transaction: false },
   ): Promise<AccountEntity> {
     return this.accountEntityRepository.manager.transaction(async () => {
@@ -45,7 +67,7 @@ export class AccountsService {
         throw new ConflictException(ErrorTypeEnum.ACCOUNT_ALREADY_EXIST);
       });
 
-      return this.selectOne({ id }, { loadEagerRelations: true });
+      return this.selectOneWithBaseBalance({ id }, owner, { loadEagerRelations: true });
     });
   }
 
@@ -95,6 +117,21 @@ export class AccountsService {
 
   /**
    * [description]
+   * @param options
+   */
+  public async selectAllWithBaseBalance(
+    owner: Partial<UserEntity>,
+    options: FindManyOptions<AccountEntity> = { loadEagerRelations: false },
+  ): Promise<AccountEntity[]> {
+    const rates = await this.exchangeRateService.selectAllFromCacheAsRecord();
+    const accounts = await this.selectAll(options, owner);
+    return accounts.map((account) =>
+      this.addBalanceInBaseCurrency({ rates, account, baseCurrency: owner.baseCurrency }),
+    );
+  }
+
+  /**
+   * [description]
    * @param conditions
    * @param options
    */
@@ -113,11 +150,36 @@ export class AccountsService {
   /**
    * [description]
    * @param conditions
+   * @param owner
+   * @param options
+   */
+  public async selectOneWithBaseBalance(
+    conditions: FindConditions<AccountEntity>,
+    owner: Partial<UserEntity>,
+    options: FindOneOptions<AccountEntity> = { loadEagerRelations: false },
+  ): Promise<AccountEntity> {
+    const rates = await this.exchangeRateService.selectAllFromCacheAsRecord();
+    return this.find(classToPlain(options))
+      .where(conditions)
+      .getOneOrFail()
+      .then((account) =>
+        this.addBalanceInBaseCurrency({ rates, account, baseCurrency: owner.baseCurrency }),
+      )
+      .catch(() => {
+        throw new NotFoundException(ErrorTypeEnum.ACCOUNT_NOT_FOUND);
+      });
+  }
+
+  /**
+   * [description]
+   * @param conditions
+   * @param owner
    * @param entityLike
    * @param options
    */
   public async updateOne(
     conditions: Partial<AccountEntity>,
+    owner: Partial<UserEntity>,
     entityLike: Partial<AccountEntity>,
     options: SaveOptions = { transaction: false },
   ): Promise<AccountEntity> {
@@ -128,7 +190,7 @@ export class AccountsService {
         throw new ConflictException(ErrorTypeEnum.ACCOUNT_ALREADY_EXIST);
       });
 
-      return this.selectOne({ id }, { loadEagerRelations: true });
+      return this.selectOneWithBaseBalance({ id }, owner, { loadEagerRelations: true });
     });
   }
 
@@ -137,7 +199,10 @@ export class AccountsService {
    * @param conditions
    * @param options
    */
-  public async deleteOne(conditions: FindConditions<AccountEntity>): Promise<AccountEntity> {
+  public async deleteOne(
+    conditions: Partial<AccountEntity>,
+    owner: Partial<UserEntity>,
+  ): Promise<AccountEntity> {
     return this.accountEntityRepository.manager.transaction(async (transactionalEntityManager) => {
       const entity = await this.selectOne(conditions);
       await transactionalEntityManager

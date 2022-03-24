@@ -102,8 +102,8 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   public async selectUser(
-    @Query() options: SelectProfileDto,
     @User() { id }: UserEntity,
+    @Query() options: SelectProfileDto,
   ): Promise<UserEntity> {
     return this.usersService.selectOne({ id }, options);
   }

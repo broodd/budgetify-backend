@@ -6,10 +6,10 @@ import {
   IsNumber,
   MaxLength,
   MinLength,
-  NotEquals,
   IsOptional,
   IsPositive,
   ValidateNested,
+  ValidateIf,
 } from 'class-validator';
 
 import { ID } from 'src/common/dto';
@@ -36,26 +36,36 @@ export class CreateTransactionDto {
   /**
    * [description]
    */
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @ValidateIf((o, value) => value || !o.currencyCode)
   @IsPositive()
-  @NotEquals(0)
+  @IsNumber({ maxDecimalPlaces: 2 })
   @ApiProperty({ example: 1 })
   public readonly amount: number;
 
   /**
    * [description]
    */
-  @IsOptional()
-  @IsEnum(CurrencyEnum)
-  @ApiProperty({ enum: CurrencyEnum })
-  public readonly currencyCode: CurrencyEnum;
+  @ValidateIf((o) => o.currencyCode)
+  @IsPositive()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @ApiPropertyOptional({ example: 1 })
+  public readonly amountInAnotherCurrency?: number;
 
   /**
    * [description]
    */
+  @ValidateIf((o) => o.amountInAnotherCurrency)
+  @IsEnum(CurrencyEnum)
+  @ApiPropertyOptional({ enum: CurrencyEnum })
+  public readonly currencyCode?: CurrencyEnum;
+
+  /**
+   * [description]
+   */
+  @IsOptional()
   @IsDate()
   @ApiProperty({ example: new Date() })
-  public readonly date: Date;
+  public readonly date?: Date;
 
   /**
    * [description]

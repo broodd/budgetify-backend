@@ -3,9 +3,11 @@ import { plainToClassFromExist } from 'class-transformer';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ErrorTypeEnum } from 'src/common/enums';
+import { CurrencyEnum, ErrorTypeEnum } from 'src/common/enums';
 import { DatabaseModule } from 'src/database';
 import { ConfigModule } from 'src/config';
+
+import { ExchangeRateModule } from '../exchangerate';
 
 import { SelectAccountsDto } from './dto';
 import { AccountEntity } from './entities';
@@ -19,6 +21,7 @@ describe('AccountsService', () => {
     balance: 0,
     owner: {
       id: '067f2f3e-b936-4029-93d6-b2f58ae4f489',
+      baseCurrency: CurrencyEnum.UAH,
     },
   } as AccountEntity;
 
@@ -26,7 +29,12 @@ describe('AccountsService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TypeOrmModule.forFeature([AccountEntity]), ConfigModule, DatabaseModule],
+      imports: [
+        TypeOrmModule.forFeature([AccountEntity]),
+        ConfigModule,
+        DatabaseModule,
+        ExchangeRateModule,
+      ],
       providers: [AccountsService],
     }).compile();
 
@@ -39,14 +47,14 @@ describe('AccountsService', () => {
 
   describe('createOne', () => {
     it('should be return account entity', async () => {
-      const received = await service.createOne(expected);
+      const received = await service.createOne(expected, expected.owner);
       expect(received).toBeInstanceOf(AccountEntity);
       expect(received.id).toEqual(expected.id);
     });
 
     it('should be return conflict exception', async () => {
       const error = new ConflictException(ErrorTypeEnum.ACCOUNT_ALREADY_EXIST);
-      return service.createOne(expected).catch((err) => {
+      return service.createOne(expected, expected.owner).catch((err) => {
         expect(err).toBeInstanceOf(ConflictException);
         expect(err).toEqual(error);
       });
@@ -56,7 +64,7 @@ describe('AccountsService', () => {
   describe('selectAll', () => {
     it('should be return accounts pagination entity', async () => {
       const received = await service.selectAll();
-      expect(received).toHaveLength(expect.any(Number));
+      expect(received.length).toEqual(expect.any(Number));
     });
 
     it('should be return not found exception', async () => {
@@ -87,7 +95,9 @@ describe('AccountsService', () => {
 
   describe('updateOne', () => {
     it('should be return account entity', async () => {
-      const received = await service.updateOne({ id: expected.id }, { balance: 10.5 });
+      const received = await service.updateOne({ id: expected.id }, expected.owner, {
+        balance: 10.5,
+      });
       expect(received).toBeInstanceOf(AccountEntity);
       expect(received.balance).not.toEqual(expected.balance);
       expect(received.id).toEqual(expected.id);
@@ -95,7 +105,7 @@ describe('AccountsService', () => {
 
     it('should be return conflict exception', async () => {
       const error = new NotFoundException(ErrorTypeEnum.ACCOUNT_NOT_FOUND);
-      return service.updateOne({ id: expected.id }, {}).catch((err) => {
+      return service.updateOne({ id: expected.id }, expected.owner, {}).catch((err) => {
         expect(err).toBeInstanceOf(NotFoundException);
         expect(err).toEqual(error);
       });
@@ -108,7 +118,7 @@ describe('AccountsService', () => {
         .spyOn(service, 'selectOne')
         .mockImplementationOnce(async () => ({ id: '' } as AccountEntity));
 
-      return service.updateOne({ id: '' }, { balance: null }).catch((err) => {
+      return service.updateOne({ id: '' }, expected.owner, { balance: null }).catch((err) => {
         expect(err).toBeInstanceOf(ConflictException);
         expect(err).toEqual(error);
       });
@@ -117,7 +127,7 @@ describe('AccountsService', () => {
 
   describe('deleteOne', () => {
     it('should be return account entity', async () => {
-      const received = await service.deleteOne({ id: expected.id });
+      const received = await service.deleteOne({ id: expected.id }, expected.owner);
       expect(received).toBeInstanceOf(AccountEntity);
     });
 
@@ -126,7 +136,7 @@ describe('AccountsService', () => {
 
       jest.spyOn(service, 'selectOne').mockImplementationOnce(async () => new AccountEntity());
 
-      return service.deleteOne({ id: '' }).catch((err) => {
+      return service.deleteOne({ id: '' }, expected.owner).catch((err) => {
         expect(err).toBeInstanceOf(NotFoundException);
         expect(err).toEqual(error);
       });

@@ -32,6 +32,7 @@ describe('AppController', () => {
           memory_heap: { status: 'up' },
           memory_rss: { status: 'up' },
           database: { status: 'up' },
+          redis: { status: 'up' },
         },
         error: {},
         details: {
@@ -39,6 +40,7 @@ describe('AppController', () => {
           memory_heap: { status: 'up' },
           memory_rss: { status: 'up' },
           database: { status: 'up' },
+          redis: { status: 'up' },
         },
       });
     });

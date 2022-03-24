@@ -51,10 +51,12 @@ async function bootstrap() {
     SwaggerModule.setup('/', app, document);
   }
 
-  return app
-    .useGlobalPipes(validationPipe)
-    .useGlobalFilters(httpExceptionFilter)
-    .listen(configService.get('PORT'), configService.get('HOST'));
+  if (configService.get('IS_HEROKU_WEB')) {
+    return app
+      .useGlobalPipes(validationPipe)
+      .useGlobalFilters(httpExceptionFilter)
+      .listen(configService.get('PORT'), configService.get('HOST'));
+  }
 }
 
 bootstrap();

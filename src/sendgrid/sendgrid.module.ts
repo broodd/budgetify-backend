@@ -17,7 +17,7 @@ export class SendGridModule {
    * @param  options [description]
    * @return         [description]
    */
-  static register(options: SendGridModuleOptions): DynamicModule {
+  static register(options?: SendGridModuleOptions): DynamicModule {
     return {
       module: SendGridModule,
       providers: [

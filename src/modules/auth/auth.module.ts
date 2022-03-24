@@ -9,6 +9,7 @@ import { UsersModule } from '../users';
 
 import { JwtStrategy } from './strategies';
 
+import { CACHE_AUTH_PREFIX } from './auth.constants';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { SendGridModule } from 'src/sendgrid';
@@ -34,13 +35,15 @@ import { SendGridModule } from 'src/sendgrid';
         Object.assign(
           {
             store: redisStore,
-            prefix: 'RESET_PASSWORD:',
-            ttl: configService.get('CACHE_RESET_PASSWORD_TTL'),
+            prefix: CACHE_AUTH_PREFIX,
+            ttl: configService.get('CACHE_AUTH_TTL'),
             host: configService.get('REDIS_HOST'),
             port: configService.get('REDIS_PORT'),
           },
-          configService.get('REDIS_TLS') && {
+          configService.get('REDIS_HAS_PASSWORD') && {
             auth_pass: configService.get('REDIS_PASSWORD'),
+          },
+          configService.get('REDIS_TLS') && {
             tls: {
               rejectUnauthorized: false,
             },

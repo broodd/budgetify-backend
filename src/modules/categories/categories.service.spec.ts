@@ -58,7 +58,7 @@ describe('CategoriesService', () => {
   describe('selectAll', () => {
     it('should be return categorys pagination entity', async () => {
       const received = await service.selectAll();
-      expect(received).toHaveLength(expect.any(Number));
+      expect(received.length).toEqual(expect.any(Number));
     });
 
     it('should be return not found exception', async () => {

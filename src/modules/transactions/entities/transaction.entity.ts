@@ -48,10 +48,20 @@ export class TransactionEntity extends BaseEntity {
   @Column({
     type: 'bigint',
     nullable: false,
-    unsigned: true,
     transformer: FloatIntColumnTransformer,
   })
   public readonly amount: number;
+
+  /**
+   * [description]
+   */
+  @ApiProperty()
+  @Column({
+    type: 'bigint',
+    nullable: true,
+    transformer: FloatIntColumnTransformer,
+  })
+  public readonly amountInAnotherCurrency: number;
 
   /**
    * [description]
