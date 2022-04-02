@@ -2,7 +2,7 @@ import { CacheModule, ConflictException, BadRequestException } from '@nestjs/com
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtModule } from '@nestjs/jwt';
 
-import { SendGridModule, SendGridService } from 'src/sendgrid';
+import { SendGridService } from 'src/sendgrid';
 import { ConfigModule, ConfigService } from 'src/config';
 import { ErrorTypeEnum } from 'src/common/enums';
 import { DatabaseModule } from 'src/database';
@@ -97,7 +97,7 @@ describe('AuthService', () => {
 
   describe('validateUser', () => {
     it('should be return user entity', async () => {
-      const received = await service.validateUser(expected);
+      const received = await service.validateUser({ id: expected.id });
       expect(received.id).toEqual(expected.id);
     });
 

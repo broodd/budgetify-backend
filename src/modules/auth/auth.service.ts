@@ -1,5 +1,5 @@
 import { BadRequestException, CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { FindConditions } from 'typeorm';
+import { FindOptionsWhere } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 
@@ -86,11 +86,11 @@ export class AuthService {
    * [description]
    * @param data
    */
-  public async validateUser(conditions: FindConditions<UserEntity>): Promise<UserEntity> {
+  public async validateUser(conditions: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
     return this.usersService
       .selectOne(conditions, {
         loadEagerRelations: false,
-        select: ['id', 'password', 'baseCurrency'],
+        select: { id: true, password: true, baseCurrency: true },
       })
       .catch(() => {
         throw new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
@@ -116,7 +116,7 @@ export class AuthService {
     const { code, email } = data;
     const user = await this.usersService.selectOne(
       { email },
-      { loadEagerRelations: false, select: ['id', 'password'] },
+      { loadEagerRelations: false, select: { id: true, password: true } },
     );
 
     const cacheCode = await this.cacheManager.get<string>(user.id);
@@ -133,7 +133,7 @@ export class AuthService {
   public async sendResetPassword(data: SendResetPasswordDto): Promise<void> {
     const { id } = await this.usersService.selectOne(data, {
       loadEagerRelations: false,
-      select: ['id'],
+      select: { id: true },
     });
 
     const code = this.generateCode();
@@ -171,7 +171,7 @@ export class AuthService {
   ): Promise<UserEntity> {
     if (!(await this.validatePassword(data.oldPassword, user.password)))
       throw new BadRequestException(ErrorTypeEnum.AUTH_PASSWORDS_DO_NOT_MATCH);
-    return this.usersService.updateOne(user, { password: data.password });
+    return this.usersService.updateOne({ id: user.id }, { password: data.password });
   }
 
   /**
@@ -181,6 +181,6 @@ export class AuthService {
   public async updateEmail(data: UpdateEmailDto, user: Partial<UserEntity>): Promise<UserEntity> {
     if (!(await this.validatePassword(data.password, user.password)))
       throw new BadRequestException(ErrorTypeEnum.AUTH_PASSWORDS_DO_NOT_MATCH);
-    return this.usersService.updateOne(user, { email: data.email });
+    return this.usersService.updateOne({ id: user.id }, { email: data.email });
   }
 }

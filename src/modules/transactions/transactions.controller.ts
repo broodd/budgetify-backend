@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import {
   Get,
   Post,
@@ -49,7 +49,7 @@ export class TransactionsController {
     @User() owner: UserEntity,
   ): Promise<TransactionEntity> {
     return this.transactionsService.createOne(
-      plainToClass(CreateTransactionDto, { ...data, owner: { id: owner.id } }),
+      plainToInstance(CreateTransactionDto, { ...data, owner: { id: owner.id } }),
       owner,
     );
   }

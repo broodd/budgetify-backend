@@ -1,4 +1,4 @@
-import { classToClassFromExist, plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { CategoriesController } from './categories.controller';
@@ -27,11 +27,12 @@ describe('CategoriesController', () => {
         {
           provide: CategoriesService,
           useValue: {
-            createOne: (data: Partial<CategoryEntity>) => classToClassFromExist(data, owner),
+            createOne: (data: Partial<CategoryEntity>) =>
+              plainToInstance(CategoryEntity, { ...data, ...owner }),
             selectAll: () => [[owner], 1],
             selectOne: () => new CategoryEntity(),
             updateOne: (owner: CategoryEntity, data: Partial<CategoryEntity>) =>
-              plainToClass(CategoryEntity, { ...owner, ...data }),
+              plainToInstance(CategoryEntity, { ...owner, ...data }),
             deleteOne: () => new CategoryEntity(),
           },
         },
@@ -61,7 +62,7 @@ describe('CategoriesController', () => {
 
   describe('updateOne', () => {
     it('should be return category entity', async () => {
-      const entityLike = classToClassFromExist(owner, updateDto);
+      const entityLike = plainToInstance(UpdateCategoryDto, { ...owner, ...updateDto });
       const received = await controller.updateOne(owner, entityLike, user);
       expect(received).toBeInstanceOf(CategoryEntity);
     });

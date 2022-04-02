@@ -1,4 +1,4 @@
-import { Processor, Process, OnQueueFailed } from '@nestjs/bull';
+import { Processor, Process, OnQueueFailed, OnQueueCompleted } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 
@@ -12,9 +12,14 @@ export class ExchangeRateProcessor {
 
   constructor(private readonly exchangeRateService: ExchangeRateService) {}
 
+  @OnQueueCompleted()
+  public onQueueCompleted(job: Job, result: any): void {
+    this.logger.verbose('OnQueueCompleted', job.id, result);
+  }
+
   @OnQueueFailed()
   public onQueueFailed(job: Job, err: Error): void {
-    this.logger.error(`${job.id} failed, ${err}`);
+    this.logger.error('OnQueueFailed', job.id, err);
   }
 
   @Process(ExchangeRateProcessorEnum.UPDATE_CURRENCY_RATES)

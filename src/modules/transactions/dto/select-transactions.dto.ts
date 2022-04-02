@@ -1,4 +1,4 @@
-import { ArrayMaxSize, IsDate, IsEnum, IsOptional } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, IsDate, IsEnum, IsOptional } from 'class-validator';
 import { Between, Brackets, FindManyOptions, In } from 'typeorm';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
@@ -26,6 +26,8 @@ export class SelectTransactionsDto extends FindManyOptionsDto<TransactionEntity>
    */
   @IsOptional()
   @IsDate({ each: true })
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
   @Type(() => Date)
   @ApiPropertyOptional({ example: [new Date(), new Date()] })
   public readonly date?: [Date, Date];
@@ -43,7 +45,7 @@ export class SelectTransactionsDto extends FindManyOptionsDto<TransactionEntity>
    */
   @IsOptional()
   @Transform(({ value }) => [].concat(value))
-  @ApiPropertyOptional({ type: () => [String], example: ['d2727cf0-8631-48ea-98fd-29d7404b1bcb'] })
+  @ApiPropertyOptional({ type: () => [String], example: ['d2727cf0-8631-48ea-98fd-29d7404b1bca'] })
   public readonly accounts?: string[];
 
   /**

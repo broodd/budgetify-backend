@@ -1,4 +1,4 @@
-import { classToPlain, plainToClass } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 import { FindManyOptionsDto } from './find-many-options.dto';
 
@@ -10,8 +10,8 @@ describe('FindManyOptionsDto', () => {
   describe('order', () => {
     it('should be return array asc', () => {
       const plain = { asc: ['id'] };
-      const classDto = plainToClass(FindManyOptionsDto, plain);
-      const instanceDto = classToPlain(classDto);
+      const classDto = plainToInstance(FindManyOptionsDto, plain);
+      const instanceDto = instanceToPlain(classDto);
       expect(instanceDto).toMatchObject({
         order: {
           id: 'ASC',
@@ -21,8 +21,8 @@ describe('FindManyOptionsDto', () => {
 
     it('should be return array desc', () => {
       const plain = { desc: ['id'] };
-      const classDto = plainToClass(FindManyOptionsDto, plain);
-      const instanceDto = classToPlain(classDto);
+      const classDto = plainToInstance(FindManyOptionsDto, plain);
+      const instanceDto = instanceToPlain(classDto);
       expect(instanceDto).toMatchObject({
         order: {
           id: 'DESC',
@@ -32,8 +32,8 @@ describe('FindManyOptionsDto', () => {
 
     it('should be return array desc ( priority case )', () => {
       const plain = { asc: ['id'], desc: ['id'] };
-      const classDto = plainToClass(FindManyOptionsDto, plain);
-      const instanceDto = classToPlain(classDto);
+      const classDto = plainToInstance(FindManyOptionsDto, plain);
+      const instanceDto = instanceToPlain(classDto);
       expect(instanceDto).toMatchObject({
         order: {
           id: 'DESC',

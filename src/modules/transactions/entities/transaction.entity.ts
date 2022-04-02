@@ -3,7 +3,6 @@ import {
   Column,
   Entity,
   ManyToOne,
-  BaseEntity,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -26,7 +25,7 @@ export enum TransactionTypeEnum {
  * [description]
  */
 @Entity('transactions')
-export class TransactionEntity extends BaseEntity {
+export class TransactionEntity {
   /**
    * [description]
    */

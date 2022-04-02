@@ -1,12 +1,12 @@
-import { classToClassFromExist, plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AccountsController } from './accounts.controller';
 import { AccountsService } from './accounts.service';
 
-import { AccountEntity } from './entities';
 import { CreateAccountDto, UpdateAccountDto, SelectAccountsDto } from './dto';
 import { UserEntity } from '../users/entities';
+import { AccountEntity } from './entities';
 
 describe('AccountsController', () => {
   const user = {
@@ -27,13 +27,14 @@ describe('AccountsController', () => {
         {
           provide: AccountsService,
           useValue: {
-            createOne: (data: Partial<AccountEntity>) => classToClassFromExist(data, owner),
+            createOne: (data: Partial<AccountEntity>) =>
+              plainToInstance(AccountEntity, { ...data, ...owner }),
             selectAll: () => [[owner], 1],
             selectAllWithBaseBalance: () => [[owner], 1],
             selectOne: () => new AccountEntity(),
             selectOneWithBaseBalance: () => new AccountEntity(),
             updateOne: (owner: AccountEntity, data: Partial<AccountEntity>) =>
-              plainToClass(AccountEntity, { ...owner, ...data }),
+              plainToInstance(AccountEntity, { ...owner, ...data }),
             deleteOne: () => new AccountEntity(),
           },
         },
@@ -63,7 +64,7 @@ describe('AccountsController', () => {
 
   describe('updateOne', () => {
     it('should be return account entity', async () => {
-      const entityLike = classToClassFromExist(owner, updateDto);
+      const entityLike = plainToInstance(UpdateAccountDto, { ...owner, ...updateDto });
       const received = await controller.updateOne(owner, entityLike, user);
       expect(received).toBeInstanceOf(AccountEntity);
     });
