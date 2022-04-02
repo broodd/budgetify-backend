@@ -3,7 +3,6 @@ import * as bcrypt from 'bcrypt';
 import {
   Column,
   Entity,
-  BaseEntity,
   BeforeInsert,
   BeforeUpdate,
   CreateDateColumn,
@@ -17,7 +16,7 @@ import { CurrencyEnum } from 'src/common/enums';
  * [description]
  */
 @Entity('users')
-export class UserEntity extends BaseEntity {
+export class UserEntity {
   /**
    * [description]
    */

@@ -1,12 +1,12 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { classToPlain, plainToClass } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import {
   Repository,
   SaveOptions,
-  FindConditions,
   FindOneOptions,
   FindManyOptions,
+  FindOptionsWhere,
   FindOptionsUtils,
   SelectQueryBuilder,
 } from 'typeorm';
@@ -43,9 +43,10 @@ export class AccountsService {
     account: Partial<AccountEntity>;
     baseCurrency: CurrencyEnum;
   }): AccountEntity {
+    if (!account.currencyCode) return plainToInstance(AccountEntity, account);
     const currencyRate = rates[account.currencyCode][baseCurrency];
     const balanceInBaseCurrency = parseFloat((currencyRate * account.balance).toFixed(2));
-    return plainToClass(AccountEntity, {
+    return plainToInstance(AccountEntity, {
       ...account,
       balanceInBaseCurrency,
     });
@@ -83,19 +84,18 @@ export class AccountsService {
       FindOptionsUtils.extractFindManyOptionsAlias(optionsOrConditions) || metadata.name,
     );
 
-    if (
+    /**
+     * Place for common relation
+     * @example
+     */
+    /* if (
       !FindOptionsUtils.isFindManyOptions(optionsOrConditions) ||
       optionsOrConditions.loadEagerRelations !== false
     ) {
-      FindOptionsUtils.joinEagerRelations(qb, qb.alias, metadata);
+      qb.leftJoinAndSelect('Entity.relation_field', 'Entity_relation_field')
+    } */
 
-      /**
-       * Place for common relation
-       * @example qb.leftJoinAndSelect('AccountEntity.relation_field', 'AccountEntity_relation_field')
-       */
-    }
-
-    return FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, optionsOrConditions);
+    return qb.setFindOptions(optionsOrConditions);
   }
 
   /**
@@ -106,7 +106,7 @@ export class AccountsService {
     options: FindManyOptions<AccountEntity> = { loadEagerRelations: false },
     owner?: Partial<UserEntity>,
   ): Promise<AccountEntity[]> {
-    const qb = this.find(classToPlain(options));
+    const qb = this.find(instanceToPlain(options));
     if (options.where) qb.where(options.where);
     if (owner) qb.andWhere({ owner });
 
@@ -136,10 +136,10 @@ export class AccountsService {
    * @param options
    */
   public async selectOne(
-    conditions: FindConditions<AccountEntity>,
+    conditions: FindOptionsWhere<AccountEntity>,
     options: FindOneOptions<AccountEntity> = { loadEagerRelations: false },
   ): Promise<AccountEntity> {
-    return this.find(classToPlain(options))
+    return this.find(instanceToPlain(options))
       .where(conditions)
       .getOneOrFail()
       .catch(() => {
@@ -154,12 +154,12 @@ export class AccountsService {
    * @param options
    */
   public async selectOneWithBaseBalance(
-    conditions: FindConditions<AccountEntity>,
+    conditions: FindOptionsWhere<AccountEntity>,
     owner: Partial<UserEntity>,
     options: FindOneOptions<AccountEntity> = { loadEagerRelations: false },
   ): Promise<AccountEntity> {
     const rates = await this.exchangeRateService.selectAllFromCacheAsRecord();
-    return this.find(classToPlain(options))
+    return this.find(instanceToPlain(options))
       .where(conditions)
       .getOneOrFail()
       .then((account) =>
@@ -178,7 +178,7 @@ export class AccountsService {
    * @param options
    */
   public async updateOne(
-    conditions: Partial<AccountEntity>,
+    conditions: FindOptionsWhere<AccountEntity>,
     owner: Partial<UserEntity>,
     entityLike: Partial<AccountEntity>,
     options: SaveOptions = { transaction: false },
@@ -197,14 +197,14 @@ export class AccountsService {
   /**
    * [description]
    * @param conditions
-   * @param options
+   * @param onwer
    */
   public async deleteOne(
-    conditions: Partial<AccountEntity>,
+    conditions: FindOptionsWhere<AccountEntity>,
     owner: Partial<UserEntity>,
   ): Promise<AccountEntity> {
     return this.accountEntityRepository.manager.transaction(async (transactionalEntityManager) => {
-      const entity = await this.selectOne(conditions);
+      const entity = await this.selectOneWithBaseBalance(conditions, owner);
       await transactionalEntityManager
         .delete(AccountEntity, conditions)
         .then(({ affected }) => {

@@ -73,7 +73,7 @@ export class CategoriesController {
     @Body() data: UpdateCategoryDto,
     @User() owner: UserEntity,
   ): Promise<CategoryEntity> {
-    return this.categoriesService.updateOne({ ...conditions, owner }, data);
+    return this.categoriesService.updateOne({ ...conditions, owner: { id: owner.id } }, data);
   }
 
   /**
@@ -85,6 +85,6 @@ export class CategoriesController {
     @Param() conditions: ID,
     @User() owner: UserEntity,
   ): Promise<CategoryEntity> {
-    return this.categoriesService.deleteOne({ ...conditions, owner });
+    return this.categoriesService.deleteOne({ ...conditions, owner: { id: owner.id } });
   }
 }

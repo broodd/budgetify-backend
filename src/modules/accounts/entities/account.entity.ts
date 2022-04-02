@@ -3,7 +3,6 @@ import {
   Column,
   Entity,
   ManyToOne,
-  BaseEntity,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -19,7 +18,7 @@ import { UserEntity } from 'src/modules/users/entities';
  * [description]
  */
 @Entity('accounts')
-export class AccountEntity extends BaseEntity {
+export class AccountEntity {
   /**
    * [description]
    */

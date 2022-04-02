@@ -1,4 +1,4 @@
-import { plainToClass, classToClassFromExist } from 'class-transformer';
+import { plainToInstance, classToClassFromExist } from 'class-transformer';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { TransactionsController } from './transactions.controller';
@@ -33,7 +33,7 @@ describe('TransactionsController', () => {
             selectOne: () => new TransactionEntity(),
             selectOneWithBaseBalance: () => new TransactionEntity(),
             updateOne: (owner: TransactionEntity, data: Partial<TransactionEntity>) =>
-              plainToClass(TransactionEntity, { ...owner, ...data }),
+              plainToInstance(TransactionEntity, { ...owner, ...data }),
             deleteOne: () => new TransactionEntity(),
           },
         },

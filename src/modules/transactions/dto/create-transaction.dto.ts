@@ -30,7 +30,7 @@ export class CreateTransactionDto {
    * [description]
    */
   @IsEnum(CreateTransactionType)
-  @ApiProperty({ enum: CreateTransactionType, examples: CreateTransactionType })
+  @ApiProperty({ enum: CreateTransactionType })
   public readonly type: TransactionTypeEnum;
 
   /**

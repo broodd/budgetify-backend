@@ -120,7 +120,7 @@ export class AuthController {
     @Body() data: UpdateProfileDto,
     @User() user: UserEntity,
   ): Promise<UserEntity> {
-    return this.usersService.updateOne(user, data);
+    return this.usersService.updateOne({ id: user.id }, data);
   }
 
   /**

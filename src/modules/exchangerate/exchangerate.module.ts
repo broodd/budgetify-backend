@@ -1,14 +1,19 @@
 import * as redisStore from 'cache-manager-redis-store';
 import { CacheModule, Module } from '@nestjs/common';
+import { BullModule } from '@nestjs/bull';
 import Axios from 'axios';
 
 import { ConfigService } from 'src/config';
 
-import { AXIOS_INSTANCE_TOKEN, CACHE_EXCHANGERATE_PREFIX, EXCHANGERATE_QUEUE } from './constants';
-import { ExchangeRateService } from './exchangerate.service';
-import { BullModule } from '@nestjs/bull';
-import { ExchangeRateProcessor } from './exchangerate.processor';
+import {
+  AXIOS_INSTANCE_TOKEN,
+  CACHE_EXCHANGERATE_PREFIX,
+  EXCHANGERATE_PROCESSOR,
+  EXCHANGERATE_QUEUE,
+} from './constants';
 import { ExchangerateController } from './exchangerate.controller';
+import { ExchangeRateProcessor } from './exchangerate.processor';
+import { ExchangeRateService } from './exchangerate.service';
 
 export const ExchangeRateQueueModule = BullModule.registerQueue({
   defaultJobOptions: {
@@ -17,6 +22,9 @@ export const ExchangeRateQueueModule = BullModule.registerQueue({
   },
   name: EXCHANGERATE_QUEUE,
 });
+
+const configService = new ConfigService();
+class MockExchangeRateProcessor {}
 
 @Module({
   imports: [
@@ -51,10 +59,11 @@ export const ExchangeRateQueueModule = BullModule.registerQueue({
       useValue: Axios,
     },
     {
-      provide: ExchangeRateProcessor,
-      useFactory: (configService: ConfigService) =>
-        configService.get<boolean>('IS_HEROKU_WORKER') === true ? ExchangeRateProcessor : {},
-      inject: [ConfigService],
+      provide: EXCHANGERATE_PROCESSOR,
+      useClass:
+        configService.get<boolean>('IS_HEROKU_WORKER') === true
+          ? ExchangeRateProcessor
+          : MockExchangeRateProcessor,
     },
   ],
   exports: [ExchangeRateService],

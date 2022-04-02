@@ -1,5 +1,5 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
-import { plainToClassFromExist } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -62,7 +62,7 @@ describe('CategoriesService', () => {
     });
 
     it('should be return not found exception', async () => {
-      const options = plainToClassFromExist(new SelectCategoriesDto(), { page: -1 });
+      const options = plainToInstance(SelectCategoriesDto, { page: -1 });
       const error = new NotFoundException(ErrorTypeEnum.CATEGORIES_NOT_FOUND);
       return service.selectAll(options).catch((err) => {
         expect(err).toBeInstanceOf(NotFoundException);

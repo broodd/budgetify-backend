@@ -3,7 +3,6 @@ import {
   Column,
   Entity,
   ManyToOne,
-  BaseEntity,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -21,7 +20,7 @@ export enum CategoryTypeEnum {
  * [description]
  */
 @Entity('categories')
-export class CategoryEntity extends BaseEntity {
+export class CategoryEntity {
   /**
    * [description]
    */

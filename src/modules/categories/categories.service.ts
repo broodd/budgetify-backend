@@ -1,12 +1,12 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { classToPlain } from 'class-transformer';
+import { instanceToPlain } from 'class-transformer';
 import {
   Repository,
   SaveOptions,
-  FindConditions,
   FindOneOptions,
   FindManyOptions,
+  FindOptionsWhere,
   FindOptionsUtils,
   SelectQueryBuilder,
 } from 'typeorm';
@@ -61,19 +61,18 @@ export class CategoriesService {
       FindOptionsUtils.extractFindManyOptionsAlias(optionsOrConditions) || metadata.name,
     );
 
-    if (
+    /**
+     * Place for common relation
+     * @example
+     */
+    /* if (
       !FindOptionsUtils.isFindManyOptions(optionsOrConditions) ||
       optionsOrConditions.loadEagerRelations !== false
     ) {
-      FindOptionsUtils.joinEagerRelations(qb, qb.alias, metadata);
+      qb.leftJoinAndSelect('Entity.relation_field', 'Entity_relation_field')
+    } */
 
-      /**
-       * Place for common relation
-       * @example qb.leftJoinAndSelect('CategoryEntity.relation_field', 'CategoryEntity_relation_field')
-       */
-    }
-
-    return FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, optionsOrConditions);
+    return qb.setFindOptions(optionsOrConditions);
   }
 
   /**
@@ -84,7 +83,7 @@ export class CategoriesService {
     options: FindManyOptions<CategoryEntity> = { loadEagerRelations: false },
     owner?: Partial<UserEntity>,
   ): Promise<CategoryEntity[]> {
-    const qb = this.find(classToPlain(options));
+    const qb = this.find(instanceToPlain(options));
     if (options.where) qb.where(options.where);
     if (owner) qb.andWhere({ owner });
 
@@ -99,10 +98,10 @@ export class CategoriesService {
    * @param options
    */
   public async selectOne(
-    conditions: FindConditions<CategoryEntity>,
+    conditions: FindOptionsWhere<CategoryEntity>,
     options: FindOneOptions<CategoryEntity> = { loadEagerRelations: false },
   ): Promise<CategoryEntity> {
-    return this.find(classToPlain(options))
+    return this.find(instanceToPlain(options))
       .where(conditions)
       .getOneOrFail()
       .catch(() => {
@@ -117,7 +116,7 @@ export class CategoriesService {
    * @param options
    */
   public async updateOne(
-    conditions: Partial<CategoryEntity>,
+    conditions: FindOptionsWhere<CategoryEntity>,
     entityLike: Partial<CategoryEntity>,
     options: SaveOptions = { transaction: false },
   ): Promise<CategoryEntity> {
@@ -137,7 +136,7 @@ export class CategoriesService {
    * @param conditions
    * @param options
    */
-  public async deleteOne(conditions: FindConditions<CategoryEntity>): Promise<CategoryEntity> {
+  public async deleteOne(conditions: FindOptionsWhere<CategoryEntity>): Promise<CategoryEntity> {
     return this.categoryEntityRepository.manager.transaction(async (transactionalEntityManager) => {
       const entity = await this.selectOne(conditions);
       await transactionalEntityManager

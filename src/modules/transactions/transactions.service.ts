@@ -1,12 +1,12 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { classToPlain, plainToClass } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import {
   Repository,
   SaveOptions,
-  FindConditions,
   FindOneOptions,
   FindManyOptions,
+  FindOptionsWhere,
   FindOptionsUtils,
   SelectQueryBuilder,
 } from 'typeorm';
@@ -76,7 +76,7 @@ export class TransactionsService {
         ? TransactionTypeEnum.INCOME
         : TransactionTypeEnum.EXPENSE;
 
-    return plainToClass(TransactionEntity, { ...entity, type, category, account });
+    return plainToInstance(TransactionEntity, { ...entity, type, category, account });
   }
 
   /**
@@ -97,12 +97,12 @@ export class TransactionsService {
           { id: entityLike.account.id, owner: { id: owner.id } },
           {
             loadEagerRelations: false,
-            select: ['id', 'currencyCode'],
+            select: { id: true, currencyCode: true },
           },
         ),
         this.categoriesService.selectOne(
           { id: entityLike.category.id, owner: { id: owner.id } },
-          { loadEagerRelations: false, select: ['id'] },
+          { loadEagerRelations: false, select: { id: true } },
         ),
       ]);
 
@@ -138,19 +138,27 @@ export class TransactionsService {
       FindOptionsUtils.extractFindManyOptionsAlias(optionsOrConditions) || metadata.name,
     );
 
-    if (
+    /**
+     * Place for add custom order
+     * qb.addSelect('__custom') and then
+     * order by it from property order from options
+     * @example
+     */
+    /* if (optionsOrConditions.order)
+      optionsOrConditions.order = setFindOrder(qb, optionsOrConditions.order); */
+
+    /**
+     * Place for common relation
+     * @example
+     */
+    /* if (
       !FindOptionsUtils.isFindManyOptions(optionsOrConditions) ||
       optionsOrConditions.loadEagerRelations !== false
     ) {
-      FindOptionsUtils.joinEagerRelations(qb, qb.alias, metadata);
+      qb.leftJoinAndSelect('Entity.relation_field', 'Entity_relation_field')
+    } */
 
-      /**
-       * Place for common relation
-       * @example qb.leftJoinAndSelect('TransactionEntity.relation_field', 'TransactionEntity_relation_field')
-       */
-    }
-
-    return FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, optionsOrConditions);
+    return qb.setFindOptions(optionsOrConditions);
   }
 
   /**
@@ -161,7 +169,7 @@ export class TransactionsService {
     options: FindManyOptions<TransactionEntity> = { loadEagerRelations: false },
     owner?: Partial<UserEntity>,
   ): Promise<TransactionEntity[]> {
-    const qb = this.find(classToPlain(options));
+    const qb = this.find(instanceToPlain(options));
     if (options.where) qb.where(options.where);
     if (owner) qb.andWhere({ owner });
 
@@ -180,16 +188,19 @@ export class TransactionsService {
   ): Promise<TransactionEntity[]> {
     const rates = await this.exchangeRateService.selectAllFromCacheAsRecord();
     const accounts = await this.selectAll(options, owner);
-    return accounts.map((transaction) =>
-      plainToClass(TransactionEntity, {
-        ...transaction,
-        account: this.accountsService.addBalanceInBaseCurrency({
-          rates,
-          account: transaction.account,
-          baseCurrency: owner.baseCurrency,
-        }),
-      }),
-    );
+    return accounts.map((transaction) => {
+      const entity = Object.assign(
+        transaction,
+        transaction.account && {
+          account: this.accountsService.addBalanceInBaseCurrency({
+            rates,
+            account: transaction.account,
+            baseCurrency: owner.baseCurrency,
+          }),
+        },
+      );
+      return plainToInstance(TransactionEntity, entity);
+    });
   }
 
   /**
@@ -198,10 +209,10 @@ export class TransactionsService {
    * @param options
    */
   public async selectOne(
-    conditions: FindConditions<TransactionEntity>,
+    conditions: FindOptionsWhere<TransactionEntity>,
     options: FindOneOptions<TransactionEntity> = { loadEagerRelations: false },
   ): Promise<TransactionEntity> {
-    return this.find(classToPlain(options))
+    return this.find(instanceToPlain(options))
       .where(conditions)
       .getOneOrFail()
       .catch(() => {
@@ -216,13 +227,13 @@ export class TransactionsService {
    * @param options
    */
   public async selectOneWithBaseBalance(
-    conditions: FindConditions<TransactionEntity>,
+    conditions: FindOptionsWhere<TransactionEntity>,
     owner: Partial<UserEntity>,
     options: FindOneOptions<TransactionEntity> = { loadEagerRelations: false },
   ): Promise<TransactionEntity> {
     const rates = await this.exchangeRateService.selectAllFromCacheAsRecord();
     return this.selectOne(conditions, options).then((transaction) =>
-      plainToClass(TransactionEntity, {
+      plainToInstance(TransactionEntity, {
         ...transaction,
         account: this.accountsService.addBalanceInBaseCurrency({
           rates,
@@ -240,14 +251,17 @@ export class TransactionsService {
    * @param options
    */
   public async updateOne(
-    conditions: Partial<TransactionEntity>,
+    conditions: FindOptionsWhere<TransactionEntity>,
     owner: Partial<UserEntity>,
     entityLike: Partial<TransactionEntity>,
     options: SaveOptions = { transaction: false },
   ): Promise<TransactionEntity> {
     return this.transactionEntityRepository.manager.transaction(async () => {
       const mergeIntoEntity = await this.selectOne(conditions, {
-        relations: ['category', 'account'],
+        relations: {
+          category: true,
+          account: true,
+        },
       });
 
       await this.processOne(this.genReverseState(mergeIntoEntity), owner);
@@ -268,19 +282,25 @@ export class TransactionsService {
    * @param options
    */
   public async deleteOne(
-    conditions: Partial<TransactionEntity>,
+    conditions: FindOptionsWhere<TransactionEntity>,
     owner: Partial<UserEntity>,
   ): Promise<TransactionEntity> {
     return this.transactionEntityRepository.manager.transaction(
       async (transactionalEntityManager) => {
         const entity = await this.selectOne(conditions, {
-          relations: ['category', 'account'],
+          relations: {
+            category: true,
+            account: true,
+          },
         });
 
         await this.processOne(this.genReverseState(entity), owner);
 
         const entityReversed = await this.selectOneWithBaseBalance(conditions, owner, {
-          relations: ['category', 'account'],
+          relations: {
+            category: true,
+            account: true,
+          },
         });
 
         await transactionalEntityManager

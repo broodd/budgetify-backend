@@ -10,7 +10,7 @@ export class CreateCategoryDto {
    * [description]
    */
   @IsEnum(CategoryTypeEnum)
-  @ApiProperty({ enum: CategoryTypeEnum, examples: CategoryTypeEnum })
+  @ApiProperty({ enum: CategoryTypeEnum })
   public readonly type: CategoryTypeEnum;
 
   /**
