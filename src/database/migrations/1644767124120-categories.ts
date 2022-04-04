@@ -27,8 +27,9 @@ const data: Partial<CategoryEntity>[] = [
 
 export class categories1644767124120 implements MigrationInterface {
   public async up({ connection }: QueryRunner): Promise<void> {
+    await connection.synchronize();
     const repository = connection.getRepository(CategoryEntity);
-    await repository.save(data).catch();
+    await repository.save(data).catch((e) => console.error(e));
   }
 
   public async down({ connection }: QueryRunner): Promise<void> {

@@ -54,12 +54,6 @@ export class AccountEntity {
   /**
    * [description]
    */
-  @ApiProperty()
-  public readonly balanceInBaseCurrency?: number;
-
-  /**
-   * [description]
-   */
   @ApiHideProperty()
   @ManyToOne(() => UserEntity, {
     onDelete: 'CASCADE',
@@ -89,4 +83,10 @@ export class AccountEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   public readonly updatedAt: Date;
+
+  /**
+   * [description]
+   */
+  @ApiProperty()
+  public readonly balanceInBaseCurrency?: number;
 }
