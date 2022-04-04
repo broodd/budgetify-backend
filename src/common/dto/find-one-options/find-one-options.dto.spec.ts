@@ -9,16 +9,7 @@ describe('FindOneOptionsDto', () => {
 
   describe('select', () => {
     it('should be return array select fields', () => {
-      const plain = { select: ['id'] };
-      const classDto = plainToInstance(FindOneOptionsDto, plain);
-      const instanceDto = instanceToPlain(classDto);
-      expect(instanceDto).toMatchObject(plain);
-    });
-  });
-
-  describe('relations', () => {
-    it('should be return array relation fields', () => {
-      const plain = { eager: true };
+      const plain = { selection: ['id'] };
       const classDto = plainToInstance(FindOneOptionsDto, plain);
       const instanceDto = instanceToPlain(classDto);
       expect(instanceDto).toMatchObject(plain);

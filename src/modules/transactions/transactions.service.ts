@@ -11,8 +11,9 @@ import {
   SelectQueryBuilder,
 } from 'typeorm';
 
-import { ErrorTypeEnum } from 'src/common/enums';
+import { CurrencyEnum, ErrorTypeEnum } from 'src/common/enums';
 
+import { CurrencyRateCacheRecord } from '../exchangerate/types';
 import { AccountEntity } from '../accounts/entities';
 import { ExchangeRateService } from '../exchangerate';
 import { CategoriesService } from '../categories';
@@ -43,6 +44,7 @@ export class TransactionsService {
   /**
    * [description]
    * @param entityLike
+   * @param owner
    */
   public async processOne(
     entityLike: Partial<TransactionEntity>,
@@ -68,6 +70,10 @@ export class TransactionsService {
     return entityLike;
   }
 
+  /**
+   * [description]
+   * @param entity
+   */
   public genReverseState(entity: Partial<TransactionEntity>): Partial<TransactionEntity> {
     const category = { id: entity.category.id };
     const account = { id: entity.account.id };
@@ -81,7 +87,39 @@ export class TransactionsService {
 
   /**
    * [description]
+   * @param rates
+   * @param account
+   * @param baseCurrency
+   */
+  public addAmountInBaseCurrency({
+    baseCurrency,
+    transaction,
+    account,
+    rates,
+  }: {
+    transaction: Partial<TransactionEntity>;
+    account: Partial<AccountEntity>;
+    rates: CurrencyRateCacheRecord;
+    baseCurrency: CurrencyEnum;
+  }): TransactionEntity {
+    if (!transaction.currencyCode) return plainToInstance(TransactionEntity, transaction);
+    const rate = rates[transaction.currencyCode][baseCurrency];
+    const accountRate = rates[transaction.currencyCode][account.currencyCode];
+
+    const amountInBaseCurrency = parseFloat((rate * transaction.amount).toFixed(2));
+    const amountInAccountCurrency = parseFloat((accountRate * transaction.amount).toFixed(2));
+
+    return plainToInstance(TransactionEntity, {
+      ...transaction,
+      amountInBaseCurrency,
+      amountInAccountCurrency,
+    });
+  }
+
+  /**
+   * [description]
    * @param entityLike
+   * @param owner
    * @param options
    */
   public async createOne(
@@ -187,20 +225,22 @@ export class TransactionsService {
     options: FindManyOptions<TransactionEntity> = { loadEagerRelations: false },
   ): Promise<TransactionEntity[]> {
     const rates = await this.exchangeRateService.selectAllFromCacheAsRecord();
-    const accounts = await this.selectAll(options, owner);
-    return accounts.map((transaction) => {
-      const entity = Object.assign(
-        transaction,
-        transaction.account && {
-          account: this.accountsService.addBalanceInBaseCurrency({
-            rates,
-            account: transaction.account,
-            baseCurrency: owner.baseCurrency,
-          }),
-        },
-      );
-      return plainToInstance(TransactionEntity, entity);
-    });
+    const transactions = await this.selectAll(options, owner);
+    return transactions.map((transaction) =>
+      plainToInstance(TransactionEntity, {
+        ...this.addAmountInBaseCurrency({
+          baseCurrency: owner.baseCurrency,
+          account: transaction.account,
+          transaction,
+          rates,
+        }),
+        account: this.accountsService.addBalanceInBaseCurrency({
+          baseCurrency: owner.baseCurrency,
+          account: transaction.account,
+          rates,
+        }),
+      }),
+    );
   }
 
   /**
@@ -234,7 +274,12 @@ export class TransactionsService {
     const rates = await this.exchangeRateService.selectAllFromCacheAsRecord();
     return this.selectOne(conditions, options).then((transaction) =>
       plainToInstance(TransactionEntity, {
-        ...transaction,
+        ...this.addAmountInBaseCurrency({
+          baseCurrency: owner.baseCurrency,
+          account: transaction.account,
+          transaction,
+          rates,
+        }),
         account: this.accountsService.addBalanceInBaseCurrency({
           rates,
           account: transaction.account,

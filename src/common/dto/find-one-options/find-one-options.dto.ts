@@ -29,23 +29,4 @@ export class FindOneOptionsDto<Entity> implements FindOneOptions {
   public get select(): FindOptionsSelect<Entity> {
     return Object.assign({}, ...(this.selection?.map((key) => ({ [key]: true })) || []));
   }
-
-  /**
-   * Indicates what relations of entity should be loaded (simplified left join form)
-   */
-  @IsOptional()
-  @IsBooleanString()
-  @ApiProperty({
-    type: 'boolean',
-    description: 'Indicates what relations of entity should be loaded',
-  })
-  public readonly eager?: string;
-
-  /**
-   * Getter to form an property of loadEagerRelations. Available after calling instanceToPlain
-   */
-  @Expose({ toPlainOnly: true })
-  public get loadEagerRelations(): boolean {
-    return !!this.eager ? JSON.parse(this.eager) : true;
-  }
 }

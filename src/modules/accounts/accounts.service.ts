@@ -34,6 +34,12 @@ export class AccountsService {
     public readonly exchangeRateService: ExchangeRateService,
   ) {}
 
+  /**
+   * [description]
+   * @param rates
+   * @param account
+   * @param baseCurrency
+   */
   public addBalanceInBaseCurrency({
     rates,
     account,

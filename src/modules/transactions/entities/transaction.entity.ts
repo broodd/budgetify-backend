@@ -139,4 +139,16 @@ export class TransactionEntity {
     default: () => 'CURRENT_TIMESTAMP',
   })
   public readonly updatedAt: Date;
+
+  /**
+   * [description]
+   */
+  @ApiProperty()
+  public readonly amountInBaseCurrency?: number;
+
+  /**
+   * [description]
+   */
+  @ApiProperty()
+  public readonly amountInAccountCurrency?: number;
 }
