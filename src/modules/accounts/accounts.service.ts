@@ -49,7 +49,6 @@ export class AccountsService {
     account: Partial<AccountEntity>;
     baseCurrency: CurrencyEnum;
   }): AccountEntity {
-    if (!account.currencyCode) return plainToInstance(AccountEntity, account);
     const currencyRate = rates[account.currencyCode][baseCurrency];
     const balanceInBaseCurrency = parseFloat((currencyRate * account.balance).toFixed(2));
     return plainToInstance(AccountEntity, {

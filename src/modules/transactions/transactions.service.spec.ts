@@ -7,10 +7,10 @@ import { CurrencyEnum, ErrorTypeEnum } from 'src/common/enums';
 import { DatabaseModule } from 'src/database';
 import { ConfigModule } from 'src/config';
 
-import { ExchangeRateModule } from '../exchangerate';
+import { ExchangeRateModule, ExchangeRateService } from '../exchangerate';
 import { AccountEntity } from '../accounts/entities';
 import { CategoriesModule } from '../categories';
-import { AccountsModule } from '../accounts';
+import { AccountsModule, AccountsService } from '../accounts';
 
 import { SelectTransactionsDto } from './dto';
 import { TransactionEntity, TransactionTypeEnum } from './entities';
@@ -52,6 +52,19 @@ describe('TransactionsService', () => {
     }).compile();
 
     service = module.get<TransactionsService>(TransactionsService);
+    jest
+      .spyOn(service, 'addAmountInBaseCurrency')
+      .mockImplementation(({ transaction }) => plainToInstance(TransactionEntity, transaction));
+
+    const accountsService = module.get<AccountsService>(AccountsService);
+    jest
+      .spyOn(accountsService, 'addBalanceInBaseCurrency')
+      .mockImplementation(({ account }) => plainToInstance(AccountEntity, account));
+
+    const exchangeRateService = module.get<ExchangeRateService>(ExchangeRateService);
+    jest
+      .spyOn(exchangeRateService, 'selectAllFromCacheAsRecord')
+      .mockImplementation(async () => ({}));
   });
 
   it('should be defined', () => {
