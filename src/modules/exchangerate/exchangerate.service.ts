@@ -13,7 +13,12 @@ import {
 
 import { CurrencyEnum, ErrorTypeEnum } from 'src/common/enums';
 
-import { CurrencyRateApi, CurrencyRateCache, CurrencyRateCacheRecord } from './types';
+import {
+  CurrencyRateApi,
+  CurrencyRateCache,
+  CurrencyRateConvert,
+  CurrencyRateCacheRecord,
+} from './types';
 import { AXIOS_INSTANCE_TOKEN, EXCHANGERATE_QUEUE, EVERY_6TH_HOUR } from './constants';
 import { ExchangeRateProcessorEnum } from './enums';
 import { ConfigService } from 'src/config';
@@ -63,11 +68,7 @@ export class ExchangeRateService implements OnModuleInit {
     return JSON.parse(result);
   }
 
-  public async selectOneConvert(
-    amount: number,
-    base: CurrencyEnum,
-    currency: CurrencyEnum,
-  ): Promise<number> {
+  public async selectOneConvert({ base, currency, amount }: CurrencyRateConvert): Promise<number> {
     const { rates } = await this.selectOneFromCache(base);
     return rates[currency] * amount;
   }
