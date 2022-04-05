@@ -1,4 +1,8 @@
-# 0.2.0 (2022-04-05)
+## [0.2.1](https://github.com/broodd/budgetify-backend/compare/v0.2.0...v0.2.1) (2022-04-05)
+
+
+
+# [0.2.0](https://github.com/broodd/budgetify-backend/compare/c0456b13fdb04594bcf6f2332264ddf48ce11158...v0.2.0) (2022-04-05)
 
 
 ### Bug Fixes
