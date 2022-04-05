@@ -128,7 +128,7 @@ export class TransactionsService {
     options: SaveOptions = { transaction: false },
   ): Promise<TransactionEntity> {
     return this.transactionEntityRepository.manager.transaction(async () => {
-      const { currencyCode, amount, amountInAnotherCurrency } = entityLike;
+      const { currencyCode, amount } = entityLike;
 
       const [account] = await Promise.all([
         this.accountsService.selectOne(
@@ -144,18 +144,20 @@ export class TransactionsService {
         ),
       ]);
 
-      if (currencyCode && !amount) {
+      if (currencyCode) {
         const convertAmount = await this.exchangeRateService.selectOneConvert(
-          amountInAnotherCurrency,
+          amount,
           currencyCode,
           account.currencyCode,
         );
-        entityLike = { ...entityLike, amount: convertAmount };
+        entityLike = { ...entityLike, currencyCode };
+        await this.processOne({ ...entityLike, amount: convertAmount }, owner);
+      } else {
+        entityLike = { ...entityLike, currencyCode: account.currencyCode };
+        await this.processOne({ ...entityLike, amount }, owner);
       }
 
-      const proccessedEntity = await this.processOne(entityLike, owner);
-
-      const entity = this.transactionEntityRepository.create(proccessedEntity);
+      const entity = this.transactionEntityRepository.create(entityLike);
       const { id } = await this.transactionEntityRepository.save(entity, options).catch(() => {
         throw new ConflictException(ErrorTypeEnum.TRANSACTION_ALREADY_EXIST);
       });
