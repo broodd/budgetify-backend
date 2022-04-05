@@ -102,7 +102,6 @@ export class TransactionsService {
     rates: CurrencyRateCacheRecord;
     baseCurrency: CurrencyEnum;
   }): TransactionEntity {
-    if (!transaction.currencyCode) return plainToInstance(TransactionEntity, transaction);
     const rate = rates[transaction.currencyCode][baseCurrency];
     const accountRate = rates[transaction.currencyCode][account.currencyCode];
 

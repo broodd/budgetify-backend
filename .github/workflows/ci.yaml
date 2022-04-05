@@ -17,11 +17,23 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: database
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: budgetify
+          POSTGRES_USER: budgetify
+          POSTGRES_PASSWORD: budgetify
         options: >-
           --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        env:
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
+        options: >-
+          --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -30,9 +42,9 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
 
       - name: Cache node modules
         uses: actions/cache@v2

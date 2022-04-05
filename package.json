@@ -13,6 +13,10 @@
     "type": "git",
     "url": "https://github.com/broodd/budgetify-backend.git"
   },
+  "engines": {
+    "node": "16.x",
+    "npm": "7.x"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
