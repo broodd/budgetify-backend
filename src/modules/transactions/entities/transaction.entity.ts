@@ -54,17 +54,6 @@ export class TransactionEntity {
   /**
    * [description]
    */
-  @ApiProperty()
-  @Column({
-    type: 'bigint',
-    nullable: true,
-    transformer: FloatIntColumnTransformer,
-  })
-  public readonly amountInAnotherCurrency: number;
-
-  /**
-   * [description]
-   */
   @ApiProperty({ maxLength: 256, nullable: true })
   @Column({ type: 'varchar', length: 256, nullable: true })
   public readonly description: string;
@@ -72,8 +61,8 @@ export class TransactionEntity {
   /**
    * [description]
    */
-  @ApiProperty({ enum: CurrencyEnum, nullable: true })
-  @Column({ type: 'enum', enum: CurrencyEnum, nullable: true })
+  @ApiProperty({ enum: CurrencyEnum })
+  @Column({ type: 'enum', enum: CurrencyEnum })
   public readonly currencyCode: CurrencyEnum;
 
   /**

@@ -9,7 +9,6 @@ import {
   IsOptional,
   IsPositive,
   ValidateNested,
-  ValidateIf,
 } from 'class-validator';
 
 import { ID } from 'src/common/dto';
@@ -36,7 +35,6 @@ export class CreateTransactionDto {
   /**
    * [description]
    */
-  @ValidateIf((o, value) => value || !o.currencyCode)
   @IsPositive()
   @IsNumber({ maxDecimalPlaces: 2 })
   @ApiProperty({ example: 1 })
@@ -45,16 +43,7 @@ export class CreateTransactionDto {
   /**
    * [description]
    */
-  @ValidateIf((o) => o.currencyCode)
-  @IsPositive()
-  @IsNumber({ maxDecimalPlaces: 2 })
-  @ApiPropertyOptional({ example: 1 })
-  public readonly amountInAnotherCurrency?: number;
-
-  /**
-   * [description]
-   */
-  @ValidateIf((o) => o.amountInAnotherCurrency)
+  @IsOptional()
   @IsEnum(CurrencyEnum)
   @ApiPropertyOptional({ enum: CurrencyEnum })
   public readonly currencyCode?: CurrencyEnum;

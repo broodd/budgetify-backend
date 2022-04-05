@@ -1,4 +1,4 @@
-import { IsArray, IsString, IsNotEmpty, IsOptional, IsBooleanString } from 'class-validator';
+import { IsArray, IsString, IsNotEmpty, IsOptional } from 'class-validator';
 import { FindOneOptions, FindOptionsSelect } from 'typeorm';
 import { Expose, Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';

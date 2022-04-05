@@ -1,0 +1,25 @@
+name: CD
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  test:
+    uses: broodd/budgetify-backend/.github/workflows/ci.yaml@master
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          skip-on-empty: 'false'
+          git-message: '{version}'
+          github-token: ${{ secrets.github_token }}

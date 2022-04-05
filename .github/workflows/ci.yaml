@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master, develop]
+  push:
+    branches: [master, develop]
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: database
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit test
+        run: npm run test
+
+      - name: Run test coverage
+        if: ${{ github.event.pull_request != null }}
+        run: npm run test:cov -- --json --outputFile=./jest.results.json
+
+      - name: Test report
+        uses: mattallty/jest-github-action@v1.0.3
+        if: ${{ github.event.pull_request != null }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          changes-only: true
