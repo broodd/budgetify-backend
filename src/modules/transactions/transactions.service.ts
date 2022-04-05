@@ -75,14 +75,12 @@ export class TransactionsService {
    * @param entity
    */
   public genReverseState(entity: Partial<TransactionEntity>): Partial<TransactionEntity> {
-    const category = { id: entity.category.id };
-    const account = { id: entity.account.id };
     const type =
       entity.type === TransactionTypeEnum.EXPENSE
         ? TransactionTypeEnum.INCOME
         : TransactionTypeEnum.EXPENSE;
 
-    return plainToInstance(TransactionEntity, { ...entity, type, category, account });
+    return plainToInstance(TransactionEntity, { ...entity, type });
   }
 
   /**
@@ -127,7 +125,7 @@ export class TransactionsService {
     options: SaveOptions = { transaction: false },
   ): Promise<TransactionEntity> {
     return this.transactionEntityRepository.manager.transaction(async () => {
-      const { currencyCode, amount } = entityLike;
+      const { amount, currencyCode } = entityLike;
 
       const [account] = await Promise.all([
         this.accountsService.selectOne(
@@ -144,16 +142,15 @@ export class TransactionsService {
       ]);
 
       if (currencyCode) {
-        const convertAmount = await this.exchangeRateService.selectOneConvert(
+        const convertAmount = await this.exchangeRateService.selectOneConvert({
           amount,
-          currencyCode,
-          account.currencyCode,
-        );
-        entityLike = { ...entityLike, currencyCode };
+          base: currencyCode,
+          currency: account.currencyCode,
+        });
         await this.processOne({ ...entityLike, amount: convertAmount }, owner);
       } else {
         entityLike = { ...entityLike, currencyCode: account.currencyCode };
-        await this.processOne({ ...entityLike, amount }, owner);
+        await this.processOne(entityLike, owner);
       }
 
       const entity = this.transactionEntityRepository.create(entityLike);
@@ -310,9 +307,24 @@ export class TransactionsService {
         },
       });
 
-      await this.processOne(this.genReverseState(mergeIntoEntity), owner);
+      const prevConvertAmount = await this.exchangeRateService.selectOneConvert({
+        amount: mergeIntoEntity.amount,
+        base: mergeIntoEntity.currencyCode,
+        currency: mergeIntoEntity.account.currencyCode,
+      });
+      await this.processOne(
+        this.genReverseState({ ...mergeIntoEntity, amount: prevConvertAmount }),
+        owner,
+      );
+
       const entity = this.transactionEntityRepository.merge(mergeIntoEntity, entityLike);
-      await this.processOne(entity, owner);
+
+      const newConvertAmount = await this.exchangeRateService.selectOneConvert({
+        amount: entity.amount,
+        base: entity.currencyCode,
+        currency: entity.account.currencyCode,
+      });
+      await this.processOne({ ...entity, amount: newConvertAmount }, owner);
 
       const { id } = await this.transactionEntityRepository.save(entity, options).catch(() => {
         throw new ConflictException(ErrorTypeEnum.TRANSACTION_ALREADY_EXIST);
@@ -340,7 +352,15 @@ export class TransactionsService {
           },
         });
 
-        await this.processOne(this.genReverseState(entity), owner);
+        const prevConvertAmount = await this.exchangeRateService.selectOneConvert({
+          amount: entity.amount,
+          base: entity.currencyCode,
+          currency: entity.account.currencyCode,
+        });
+        await this.processOne(
+          this.genReverseState({ ...entity, amount: prevConvertAmount }),
+          owner,
+        );
 
         const entityReversed = await this.selectOneWithBaseBalance(conditions, owner, {
           relations: {

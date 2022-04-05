@@ -65,6 +65,9 @@ describe('TransactionsService', () => {
     jest
       .spyOn(exchangeRateService, 'selectAllFromCacheAsRecord')
       .mockImplementation(async () => ({}));
+    jest
+      .spyOn(exchangeRateService, 'selectOneConvert')
+      .mockImplementation(async ({ amount }) => amount);
   });
 
   it('should be defined', () => {
@@ -147,7 +150,12 @@ describe('TransactionsService', () => {
     it('should be return not found exception', async () => {
       const error = new NotFoundException(ErrorTypeEnum.TRANSACTION_NOT_FOUND);
 
-      jest.spyOn(service, 'selectOne').mockImplementationOnce(async () => new TransactionEntity());
+      jest
+        .spyOn(service, 'selectOne')
+        .mockImplementationOnce(async () => plainToInstance(TransactionEntity, { account: {} }));
+      jest
+        .spyOn(service, 'selectOneWithBaseBalance')
+        .mockImplementationOnce(async () => new TransactionEntity());
       jest.spyOn(service, 'genReverseState').mockImplementationOnce(() => new TransactionEntity());
       jest.spyOn(service, 'processOne').mockImplementationOnce(async () => new TransactionEntity());
 
