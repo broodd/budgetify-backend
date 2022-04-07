@@ -1,4 +1,4 @@
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import {
   Get,
   Post,
@@ -13,11 +13,11 @@ import {
 
 import { User } from 'src/common/decorators';
 
+import { UserRefreshTokensService, UsersService } from '../users/services';
 import { UserEntity } from '../users/entities';
-import { UsersService } from '../users';
 
 import {
-  JwtResponseDto,
+  JwtTokensDto,
   CredentialsDto,
   UpdateEmailDto,
   CreateProfileDto,
@@ -25,11 +25,12 @@ import {
   ResetPasswordDto,
   UpdateProfileDto,
   UpdatePasswordDto,
+  JwtRefreshTokenDto,
   SendResetPasswordDto,
   ConfirmationEmailDto,
 } from './dto';
+import { JwtAuthGuard, JwtRefreshGuard } from './guards';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './guards';
 
 /**
  * [description]
@@ -44,6 +45,7 @@ export class AuthController {
    * @param authService
    */
   constructor(
+    private readonly userRefreshTokensService: UserRefreshTokensService,
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
   ) {}
@@ -53,7 +55,7 @@ export class AuthController {
    * @param data
    */
   @Post('signin')
-  public async createToken(@Body() data: CredentialsDto): Promise<JwtResponseDto> {
+  public async createToken(@Body() data: CredentialsDto): Promise<JwtTokensDto> {
     return this.authService.createToken(data);
   }
 
@@ -62,8 +64,36 @@ export class AuthController {
    * @param data
    */
   @Post('signup')
-  public async createUser(@Body() data: CreateProfileDto): Promise<JwtResponseDto> {
+  public async createUser(@Body() data: CreateProfileDto): Promise<JwtTokensDto> {
     return this.authService.createUser(data);
+  }
+
+  /**
+   * [description]
+   * @param data
+   */
+  @Post('log-out')
+  @UseGuards(JwtRefreshGuard)
+  @ApiBody({ type: JwtRefreshTokenDto })
+  public async logOut(@User() user: UserEntity): Promise<void> {
+    const [refreshToken] = user.refreshTokens;
+    await this.userRefreshTokensService.deleteOne({ id: refreshToken.id, user: { id: user.id } });
+  }
+
+  /**
+   * [description]
+   * @param user
+   */
+  @Post('refresh-tokens')
+  @UseGuards(JwtRefreshGuard)
+  @ApiBody({ type: JwtRefreshTokenDto })
+  public async refreshTokens(@User() user: UserEntity): Promise<JwtTokensDto> {
+    const [oldRefreshToken] = user.refreshTokens;
+    const refreshToken = await this.userRefreshTokensService.generateAndCreateOne({
+      id: oldRefreshToken.id,
+      user: { id: user.id },
+    });
+    return this.authService.generateTokens(user, refreshToken);
   }
 
   /**
@@ -89,8 +119,8 @@ export class AuthController {
    * @param data
    */
   @Post('confirmation-email-code')
-  public async confirmationEmail(@Body() data: ConfirmationEmailDto): Promise<void> {
-    await this.authService.confirmationEmailCode(data);
+  public async validateEmailCode(@Body() data: ConfirmationEmailDto): Promise<void> {
+    await this.authService.validateEmailCode(data);
   }
 
   /**

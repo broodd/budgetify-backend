@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { UserEntity } from '../users/entities';
-import { UsersService } from '../users';
+import { UsersService } from '../users/services';
 
-import { JwtResponseDto, SelectProfileDto } from './dto';
+import { JwtTokensDto, SelectProfileDto } from './dto';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { UserRefreshTokensService } from '../users/services';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -28,8 +29,14 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: {
-            createToken: () => new JwtResponseDto(),
-            createUser: () => new JwtResponseDto(),
+            createToken: () => new JwtTokensDto(),
+            createUser: () => new JwtTokensDto(),
+          },
+        },
+        {
+          provide: UserRefreshTokensService,
+          useValue: {
+            deleteOne: () => void {},
           },
         },
       ],
@@ -45,14 +52,14 @@ describe('AuthController', () => {
   describe('createToken', () => {
     it('should be return jwt entity', async () => {
       const received = await controller.createToken(expected);
-      expect(received).toBeInstanceOf(JwtResponseDto);
+      expect(received).toBeInstanceOf(JwtTokensDto);
     });
   });
 
   describe('createUser', () => {
     it('should be return jwt entity', async () => {
       const received = await controller.createUser(expected);
-      expect(received).toBeInstanceOf(JwtResponseDto);
+      expect(received).toBeInstanceOf(JwtTokensDto);
     });
   });
 

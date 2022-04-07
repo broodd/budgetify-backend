@@ -27,15 +27,6 @@ export class CreateCategoryDto {
   @IsOptional()
   @MinLength(1)
   @MaxLength(32)
-  @ApiPropertyOptional({ example: 'icon' })
-  public readonly icon?: string;
-
-  /**
-   * [description]
-   */
-  @IsOptional()
-  @MinLength(1)
-  @MaxLength(32)
   @ApiPropertyOptional({ example: 'color' })
   public readonly color?: string;
 }

@@ -7,31 +7,26 @@ import { ErrorTypeEnum } from 'src/common/enums';
 import { DatabaseModule } from 'src/database';
 import { ConfigModule } from 'src/config';
 
-import { SelectCategoriesDto } from './dto';
-import { CategoryEntity, CategoryTypeEnum } from './entities';
+import { SelectUsersDto } from '../dto';
+import { UserRefreshTokenEntity } from '../entities';
 
-import { CategoriesService } from './categories.service';
+import { UserRefreshTokensService } from './user-refresh-tokens.service';
 
-describe('CategoriesService', () => {
+describe('UserRefreshTokensService', () => {
   const expected = {
-    id: 'd2727cf0-8631-48ea-98fd-29d7404b1bd2',
-    name: 'Category',
-    color: 'color',
-    type: CategoryTypeEnum.INCOME,
-    owner: {
-      id: '067f2f3e-b936-4029-93d6-b2f58ae4f489',
-    },
-  } as CategoryEntity;
+    id: '067f2f3e-b936-4029-93d6-b2f58ae4f489',
+    ppid: 'some-ppid',
+  } as UserRefreshTokenEntity;
 
-  let service: CategoriesService;
+  let service: UserRefreshTokensService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TypeOrmModule.forFeature([CategoryEntity]), ConfigModule, DatabaseModule],
-      providers: [CategoriesService],
+      imports: [TypeOrmModule.forFeature([UserRefreshTokenEntity]), ConfigModule, DatabaseModule],
+      providers: [UserRefreshTokensService],
     }).compile();
 
-    service = module.get<CategoriesService>(CategoriesService);
+    service = module.get<UserRefreshTokensService>(UserRefreshTokensService);
   });
 
   it('should be defined', () => {
@@ -39,14 +34,14 @@ describe('CategoriesService', () => {
   });
 
   describe('createOne', () => {
-    it('should be return category entity', async () => {
+    it('should be return user entity', async () => {
       const received = await service.createOne(expected);
-      expect(received).toBeInstanceOf(CategoryEntity);
+      expect(received).toBeInstanceOf(UserRefreshTokenEntity);
       expect(received.id).toEqual(expected.id);
     });
 
     it('should be return conflict exception', async () => {
-      const error = new ConflictException(ErrorTypeEnum.CATEGORY_ALREADY_EXIST);
+      const error = new ConflictException(ErrorTypeEnum.USER_REFRESH_TOKEN_ALREADY_EXIST);
       return service.createOne(expected).catch((err) => {
         expect(err).toBeInstanceOf(ConflictException);
         expect(err).toEqual(error);
@@ -55,14 +50,14 @@ describe('CategoriesService', () => {
   });
 
   describe('selectAll', () => {
-    it('should be return categorys pagination entity', async () => {
+    it('should be return users pagination entity', async () => {
       const received = await service.selectAll();
       expect(received.length).toEqual(expect.any(Number));
     });
 
     it('should be return not found exception', async () => {
-      const options = plainToInstance(SelectCategoriesDto, { page: -1 });
-      const error = new NotFoundException(ErrorTypeEnum.CATEGORIES_NOT_FOUND);
+      const options = plainToInstance(SelectUsersDto, { page: -1 });
+      const error = new NotFoundException(ErrorTypeEnum.USER_REFRESH_TOKENS_NOT_FOUND);
       return service.selectAll(options).catch((err) => {
         expect(err).toBeInstanceOf(NotFoundException);
         expect(err).toEqual(error);
@@ -71,14 +66,14 @@ describe('CategoriesService', () => {
   });
 
   describe('selectOne', () => {
-    it('should be return category entity', async () => {
+    it('should be return user entity', async () => {
       const received = await service.selectOne({ id: expected.id });
-      expect(received).toBeInstanceOf(CategoryEntity);
+      expect(received).toBeInstanceOf(UserRefreshTokenEntity);
       expect(received.id).toEqual(expected.id);
     });
 
     it('should be return not found exception', async () => {
-      const error = new NotFoundException(ErrorTypeEnum.CATEGORY_NOT_FOUND);
+      const error = new NotFoundException(ErrorTypeEnum.USER_REFRESH_TOKEN_NOT_FOUND);
       return service.selectOne({ id: '' }).catch((err) => {
         expect(err).toBeInstanceOf(NotFoundException);
         expect(err).toEqual(error);
@@ -87,15 +82,15 @@ describe('CategoriesService', () => {
   });
 
   describe('updateOne', () => {
-    it('should be return category entity', async () => {
-      const received = await service.updateOne({ id: expected.id }, { name: 'Category 2' });
-      expect(received).toBeInstanceOf(CategoryEntity);
-      expect(received.name).not.toEqual(expected.name);
+    it('should be return user entity', async () => {
+      const received = await service.updateOne({ id: expected.id }, { ppid: 'some-secret' });
+      expect(received).toBeInstanceOf(UserRefreshTokenEntity);
+      expect(received.ppid).not.toEqual(expected.ppid);
       expect(received.id).toEqual(expected.id);
     });
 
     it('should be return conflict exception', async () => {
-      const error = new NotFoundException(ErrorTypeEnum.CATEGORY_NOT_FOUND);
+      const error = new NotFoundException(ErrorTypeEnum.USER_REFRESH_TOKEN_NOT_FOUND);
       return service.updateOne({ id: expected.id }, {}).catch((err) => {
         expect(err).toBeInstanceOf(NotFoundException);
         expect(err).toEqual(error);
@@ -103,13 +98,13 @@ describe('CategoriesService', () => {
     });
 
     it('should be return not found exception', async () => {
-      const error = new ConflictException(ErrorTypeEnum.CATEGORY_ALREADY_EXIST);
+      const error = new ConflictException(ErrorTypeEnum.USER_REFRESH_TOKEN_ALREADY_EXIST);
 
       jest
         .spyOn(service, 'selectOne')
-        .mockImplementationOnce(async () => ({ id: '' } as CategoryEntity));
+        .mockImplementationOnce(async () => ({ id: '' } as UserRefreshTokenEntity));
 
-      return service.updateOne({ id: '' }, { name: null }).catch((err) => {
+      return service.updateOne({ id: '' }, { ppid: null }).catch((err) => {
         expect(err).toBeInstanceOf(ConflictException);
         expect(err).toEqual(error);
       });
@@ -117,15 +112,17 @@ describe('CategoriesService', () => {
   });
 
   describe('deleteOne', () => {
-    it('should be return category entity', async () => {
+    it('should be return user entity', async () => {
       const received = await service.deleteOne({ id: expected.id });
-      expect(received).toBeInstanceOf(CategoryEntity);
+      expect(received).toBeInstanceOf(UserRefreshTokenEntity);
     });
 
     it('should be return not found exception', async () => {
-      const error = new NotFoundException(ErrorTypeEnum.CATEGORY_NOT_FOUND);
+      const error = new NotFoundException(ErrorTypeEnum.USER_REFRESH_TOKEN_NOT_FOUND);
 
-      jest.spyOn(service, 'selectOne').mockImplementationOnce(async () => new CategoryEntity());
+      jest
+        .spyOn(service, 'selectOne')
+        .mockImplementationOnce(async () => new UserRefreshTokenEntity());
 
       return service.deleteOne({ id: '' }).catch((err) => {
         expect(err).toBeInstanceOf(NotFoundException);

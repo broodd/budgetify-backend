@@ -47,13 +47,6 @@ export class CategoryEntity {
    */
   @ApiProperty({ maxLength: 32, nullable: true })
   @Column({ type: 'varchar', length: 32, nullable: true })
-  public readonly icon: string;
-
-  /**
-   * [description]
-   */
-  @ApiProperty({ maxLength: 32, nullable: true })
-  @Column({ type: 'varchar', length: 32, nullable: true })
   public readonly color: string;
 
   /**

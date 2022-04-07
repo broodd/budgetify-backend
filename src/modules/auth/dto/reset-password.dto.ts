@@ -14,3 +14,8 @@ export class ResetPasswordDto extends PickType(CreateUserDto, ['email', 'passwor
   @ApiProperty({ example: '123456', maxLength: 6 })
   public readonly code: string;
 }
+
+/**
+ * [description]
+ */
+export class SendResetPasswordDto extends PickType(CreateUserDto, ['email']) {}

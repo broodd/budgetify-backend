@@ -7,7 +7,7 @@ import { ConfigModule, ConfigService } from 'src/config';
 import { ErrorTypeEnum } from 'src/common/enums';
 import { DatabaseModule } from 'src/database';
 
-import { UserEntity } from '../users/entities';
+import { UserEntity, UserRefreshTokenEntity } from '../users/entities';
 import { UsersModule } from '../users';
 
 import { AuthService } from './auth.service';
@@ -19,6 +19,10 @@ describe('AuthService', () => {
     id: '067f2f3e-b936-4029-93d6-b2f58ae4f489',
     email: 'admin@gmail.com',
   } as UserEntity;
+  const refreshToken = {
+    id: '067f2f3e-b936-4029-93d6-b2f58ae4f489',
+    ppid: 'some-ppid',
+  } as UserRefreshTokenEntity;
 
   let service: AuthService;
 
@@ -56,7 +60,7 @@ describe('AuthService', () => {
   });
 
   it('generateToken', () => {
-    const received = service.generateToken(expected);
+    const received = service.generateTokens(expected, refreshToken);
     expect(received.token).toEqual(expect.any(String));
   });
 
@@ -103,7 +107,7 @@ describe('AuthService', () => {
 
     it('should be return unauthorized exception', async () => {
       const error = new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
-      return service.validateUser({ ...expected, password: '' }).catch((err) => {
+      return service.validateUser({ id: expected.id, password: '' }).catch((err) => {
         expect(err).toBeInstanceOf(BadRequestException);
         expect(err).toEqual(error);
       });

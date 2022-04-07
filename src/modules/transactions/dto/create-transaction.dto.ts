@@ -1,15 +1,6 @@
+import { IsDate, IsEnum, IsNumber, IsOptional, IsPositive, ValidateNested } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsDate,
-  IsEnum,
-  IsNumber,
-  MaxLength,
-  MinLength,
-  IsOptional,
-  IsPositive,
-  ValidateNested,
-} from 'class-validator';
 
 import { ID } from 'src/common/dto';
 import { CurrencyEnum } from 'src/common/enums';
@@ -60,9 +51,7 @@ export class CreateTransactionDto {
    * [description]
    */
   @IsOptional()
-  @MinLength(1)
-  @MaxLength(256)
-  @ApiPropertyOptional({ example: 'Desciption' })
+  @ApiPropertyOptional({ example: 'Description' })
   public readonly description?: string;
 
   /**
