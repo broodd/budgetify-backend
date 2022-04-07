@@ -6,6 +6,7 @@ import { ConfigService } from 'src/config';
 
 import { UserEntity } from '../../users/entities';
 
+import { JwtAccessTokenPayloadDto } from '../dto';
 import { AuthService } from '../auth.service';
 
 /**
@@ -24,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get('PASSPORT_SECRET'),
+      secretOrKey: configService.get('JWT_SECRET_ACCESS_TOKEN'),
     });
   }
 
@@ -32,7 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * [description]
    * @param id
    */
-  public async validate({ id }: UserEntity): Promise<UserEntity> {
-    return this.authService.validateUser({ id });
+  public async validate({ id, refreshTokenId }: JwtAccessTokenPayloadDto): Promise<UserEntity> {
+    return this.authService.validateUser({ id, refreshTokens: { id: refreshTokenId } });
   }
 }

@@ -6,7 +6,6 @@ const data: Partial<CategoryEntity>[] = [
   {
     id: 'd2727cf0-8631-48ea-98fd-29d7404b1bca',
     name: 'Expense category',
-    icon: 'icon',
     color: 'color',
     type: CategoryTypeEnum.EXPENSE,
     owner: {
@@ -16,7 +15,6 @@ const data: Partial<CategoryEntity>[] = [
   {
     id: 'd2727cf0-8631-48ea-98fd-29d7404b1d54',
     name: 'Income category',
-    icon: 'icon',
     color: 'color',
     type: CategoryTypeEnum.INCOME,
     owner: {

@@ -7,7 +7,7 @@ import { ConfigService } from 'src/config';
 
 import { UsersModule } from '../users';
 
-import { JwtStrategy } from './strategies';
+import { JwtRefreshTokenStrategy, JwtStrategy } from './strategies';
 
 import { CACHE_AUTH_PREFIX } from './auth.constants';
 import { AuthController } from './auth.controller';
@@ -20,16 +20,7 @@ import { SendGridModule } from 'src/sendgrid';
 @Module({
   imports: [
     PassportModule,
-    JwtModule.registerAsync({
-      useFactory: (configService: ConfigService) => {
-        const expiresIn = configService.get<number>('PASSPORT_EXPIRES');
-        return {
-          secret: configService.get('PASSPORT_SECRET'),
-          signOptions: Object.assign({}, expiresIn && { expiresIn }),
-        };
-      },
-      inject: [ConfigService],
-    }),
+    JwtModule.register({}),
     CacheModule.registerAsync({
       useFactory: async (configService: ConfigService) =>
         Object.assign(
@@ -63,7 +54,7 @@ import { SendGridModule } from 'src/sendgrid';
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, JwtRefreshTokenStrategy],
   exports: [PassportModule, JwtModule, AuthService],
 })
 export class AuthModule {}

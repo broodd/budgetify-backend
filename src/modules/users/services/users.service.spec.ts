@@ -7,8 +7,8 @@ import { ErrorTypeEnum } from 'src/common/enums';
 import { DatabaseModule } from 'src/database';
 import { ConfigModule } from 'src/config';
 
-import { SelectUsersDto } from './dto';
-import { UserEntity } from './entities';
+import { SelectUsersDto } from '../dto';
+import { UserEntity } from '../entities';
 
 import { UsersService } from './users.service';
 

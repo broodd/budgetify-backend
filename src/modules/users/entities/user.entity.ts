@@ -3,14 +3,19 @@ import * as bcrypt from 'bcrypt';
 import {
   Column,
   Entity,
+  OneToMany,
   BeforeInsert,
   BeforeUpdate,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { CurrencyEnum } from 'src/common/enums';
+
+import { UserRefreshTokenEntity } from './user-refresh-token.entity';
+import { UserStatusEnum } from '../enums';
 
 /**
  * [description]
@@ -23,6 +28,13 @@ export class UserEntity {
   @ApiProperty({ readOnly: true })
   @PrimaryGeneratedColumn('uuid')
   public readonly id: string;
+
+  /**
+   * [description]
+   */
+  @ApiProperty({ enum: UserStatusEnum, default: UserStatusEnum.ACTIVATED })
+  @Column({ type: 'enum', enum: UserStatusEnum, default: UserStatusEnum.ACTIVATED })
+  public readonly status: UserStatusEnum = UserStatusEnum.ACTIVATED;
 
   /**
    * [description]
@@ -58,9 +70,17 @@ export class UserEntity {
   /**
    * [description]
    */
+  @ApiHideProperty()
+  @OneToMany(() => UserRefreshTokenEntity, ({ user }) => user, {
+    nullable: true,
+  })
+  public readonly refreshTokens: UserRefreshTokenEntity[];
+
+  /**
+   * [description]
+   */
   @ApiProperty({ readOnly: true })
   @CreateDateColumn({
-    readonly: true,
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
@@ -71,9 +91,15 @@ export class UserEntity {
    */
   @ApiProperty({ readOnly: true })
   @UpdateDateColumn({
-    readonly: true,
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   public readonly updatedAt: Date;
+
+  /**
+   * [description]
+   */
+  @ApiProperty({ readOnly: true })
+  @DeleteDateColumn()
+  public readonly deletedAt: Date;
 }

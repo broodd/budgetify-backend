@@ -13,7 +13,7 @@ import {
 
 import { ErrorTypeEnum } from 'src/common/enums';
 
-import { UserEntity } from './entities';
+import { UserEntity } from '../entities';
 
 /**
  * [description]
@@ -59,6 +59,15 @@ export class UsersService {
     );
 
     /**
+     * Place for add custom order
+     * qb.addSelect('__custom') and then
+     * order by it from property order from options
+     * @example
+     */
+    /* if (optionsOrConditions.order)
+      optionsOrConditions.order = setFindOrder(qb, optionsOrConditions.order); */
+
+    /**
      * Place for common relation
      * @example
      */
@@ -83,6 +92,20 @@ export class UsersService {
     if (options.where) qb.where(options.where);
     return qb.getMany().catch(() => {
       throw new NotFoundException(ErrorTypeEnum.USERS_NOT_FOUND);
+    });
+  }
+
+  /**
+   * [description]
+   * @param conditions
+   * @param options
+   */
+  public async selectOneByRepository(
+    conditions: FindOptionsWhere<UserEntity>,
+    options: FindOneOptions<UserEntity> = { loadEagerRelations: false },
+  ): Promise<UserEntity> {
+    return this.userEntityRepository.findOneOrFail({ ...options, where: conditions }).catch(() => {
+      throw new NotFoundException(ErrorTypeEnum.USER_NOT_FOUND);
     });
   }
 

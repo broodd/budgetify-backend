@@ -1,26 +1,29 @@
 import { BadRequestException, CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { FindOptionsWhere } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere } from 'typeorm';
+import { ConfigService } from 'src/config';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 
-import * as crypto from 'crypto';
-import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
+import { compare } from 'bcrypt';
 
 import { ErrorTypeEnum } from 'src/common/enums';
 import { SendGridService } from 'src/sendgrid';
 
-import { UserEntity } from '../users/entities';
-import { UsersService } from '../users';
+import { UserEntity, UserRefreshTokenEntity } from '../users/entities';
+import { UserRefreshTokensService, UsersService } from '../users/services';
 
 import {
+  JwtTokensDto,
   CredentialsDto,
-  JwtResponseDto,
   UpdateEmailDto,
   CreateProfileDto,
   ResetPasswordDto,
   UpdatePasswordDto,
   SendResetPasswordDto,
   ConfirmationEmailDto,
+  JwtAccessTokenPayloadDto,
+  JwtRefreshTokenPayloadDto,
 } from './dto';
 
 /**
@@ -28,6 +31,11 @@ import {
  */
 @Injectable()
 export class AuthService {
+  private readonly expiresInRefreshToken;
+  private readonly expiresInAccessToken;
+  private readonly secretRefreshToken;
+  private readonly secretAccessToken;
+
   /**
    * [description]
    * @param configService
@@ -35,19 +43,61 @@ export class AuthService {
    * @param jwtService
    */
   constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly userRefreshTokensService: UserRefreshTokensService,
     private readonly sendGridService: SendGridService,
+    private readonly configService: ConfigService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-  ) {}
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
+  ) {
+    this.expiresInRefreshToken = this.configService.get<number>('JWT_EXPIRES_REFRESH_TOKEN');
+    this.expiresInAccessToken = this.configService.get<number>('JWT_EXPIRES_ACCESS_TOKEN');
+    this.secretRefreshToken = this.configService.get<string>('JWT_SECRET_REFRESH_TOKEN');
+    this.secretAccessToken = this.configService.get<string>('JWT_SECRET_ACCESS_TOKEN');
+  }
 
   /**
    * [description]
    * @param id
+   * @param userRefreshToken
    */
-  public generateToken({ id }: UserEntity): JwtResponseDto {
-    const token = this.jwtService.sign({ id });
-    return { token };
+  public generateAccessToken(
+    { id }: UserEntity,
+    { id: refreshTokenId }: UserRefreshTokenEntity,
+  ): string {
+    const payload: JwtAccessTokenPayloadDto = { id, refreshTokenId };
+    return this.jwtService.sign(payload, {
+      expiresIn: this.expiresInAccessToken,
+      secret: this.secretAccessToken,
+    });
+  }
+
+  /**
+   * [description]
+   * @param id
+   * @param userRefreshToken
+   */
+  public generateRefreshToken(
+    { id }: UserEntity,
+    { id: refreshTokenId, ppid }: UserRefreshTokenEntity,
+  ): string {
+    const payload: JwtRefreshTokenPayloadDto = { id, refreshTokenId, ppid };
+    return this.jwtService.sign(payload, {
+      expiresIn: this.expiresInRefreshToken,
+      secret: this.secretRefreshToken,
+    });
+  }
+
+  /**
+   * [description]
+   * @param user
+   * @param userRefreshToken
+   */
+  public generateTokens(user: UserEntity, userRefreshToken: UserRefreshTokenEntity): JwtTokensDto {
+    const token = this.generateAccessToken(user, userRefreshToken);
+    const refreshToken = this.generateRefreshToken(user, userRefreshToken);
+    return { token, refreshToken };
   }
 
   /**
@@ -56,7 +106,7 @@ export class AuthService {
    * @param size
    */
   public generateCode(digits = 6, size = 20): string {
-    const buffer = crypto.randomBytes(size);
+    const buffer = randomBytes(size);
     const value = buffer.readUInt32BE(0x0f) % 10 ** digits;
     return value.toString().padStart(digits, '0');
   }
@@ -66,31 +116,38 @@ export class AuthService {
    * @param email
    * @param password
    */
-  public async createToken({ email, password }: CredentialsDto): Promise<JwtResponseDto> {
-    const user = await this.validateUser({ email });
+  public async createToken({ email, password }: CredentialsDto): Promise<JwtTokensDto> {
+    const user = await this.validateUser({ email }, { relations: null });
     if (!(await this.validatePassword(password, user.password)))
       throw new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
-    return this.generateToken(user);
+    const refreshToken = await this.userRefreshTokensService.generateAndCreateOne({ user });
+    return this.generateTokens(user, refreshToken);
   }
 
   /**
    * [description]
    * @param data
    */
-  public async createUser(data: CreateProfileDto): Promise<JwtResponseDto> {
+  public async createUser(data: CreateProfileDto): Promise<JwtTokensDto> {
     const user = await this.usersService.createOne(data);
-    return this.generateToken(user);
+    const refreshToken = await this.userRefreshTokensService.generateAndCreateOne({ user });
+    return this.generateTokens(user, refreshToken);
   }
 
   /**
    * [description]
    * @param data
    */
-  public async validateUser(conditions: FindOptionsWhere<UserEntity>): Promise<UserEntity> {
+  public async validateUser(
+    conditions: FindOptionsWhere<UserEntity>,
+    options?: FindOneOptions<UserEntity>,
+  ): Promise<UserEntity> {
     return this.usersService
-      .selectOne(conditions, {
+      .selectOneByRepository(conditions, {
+        select: { id: true, password: true },
+        relations: { refreshTokens: true },
         loadEagerRelations: false,
-        select: { id: true, password: true, baseCurrency: true },
+        ...options,
       })
       .catch(() => {
         throw new BadRequestException(ErrorTypeEnum.AUTH_INCORRECT_CREDENTIALS);
@@ -103,7 +160,7 @@ export class AuthService {
    * @param encrypted
    */
   public async validatePassword(data: string, encrypted: string): Promise<boolean> {
-    return bcrypt.compare(data, encrypted).catch(() => {
+    return compare(data, encrypted).catch(() => {
       throw new BadRequestException(ErrorTypeEnum.AUTH_PASSWORDS_DO_NOT_MATCH);
     });
   }
@@ -112,7 +169,7 @@ export class AuthService {
    * [description]
    * @param data
    */
-  public async confirmationEmailCode(data: ConfirmationEmailDto): Promise<Partial<UserEntity>> {
+  public async validateEmailCode(data: ConfirmationEmailDto): Promise<Partial<UserEntity>> {
     const { code, email } = data;
     const user = await this.usersService.selectOne(
       { email },
@@ -152,7 +209,7 @@ export class AuthService {
    * @param data
    */
   public async resetPassword(data: ResetPasswordDto): Promise<void> {
-    const { id, password } = await this.confirmationEmailCode(data);
+    const { id, password } = await this.validateEmailCode(data);
 
     if (await this.validatePassword(data.password, password))
       throw new BadRequestException(ErrorTypeEnum.NEW_PASSWORD_AND_OLD_PASSWORD_CANNOT_BE_SAME);
@@ -164,6 +221,7 @@ export class AuthService {
   /**
    * [description]
    * @param data
+   * @param user
    */
   public async updatePassword(
     data: UpdatePasswordDto,
@@ -177,6 +235,7 @@ export class AuthService {
   /**
    * [description]
    * @param data
+   * @param user
    */
   public async updateEmail(data: UpdateEmailDto, user: Partial<UserEntity>): Promise<UserEntity> {
     if (!(await this.validatePassword(data.password, user.password)))
