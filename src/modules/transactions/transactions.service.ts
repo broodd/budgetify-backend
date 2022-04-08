@@ -1,6 +1,9 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { stringify } from 'csv-stringify';
+import { FastifyReply } from 'fastify';
+import { flatten } from 'flat';
 import {
   Repository,
   SaveOptions,
@@ -21,12 +24,15 @@ import { UserEntity } from '../users/entities';
 import { AccountsService } from '../accounts';
 
 import { TransactionEntity, TransactionTypeEnum } from './entities';
+import { ConfigService } from 'src/config';
 
 /**
  * [description]
  */
 @Injectable()
 export class TransactionsService {
+  private readonly destination: string;
+
   /**
    * [description]
    * @param transactionEntityRepository
@@ -39,7 +45,10 @@ export class TransactionsService {
     public readonly exchangeRateService: ExchangeRateService,
     public readonly categoriesService: CategoriesService,
     public readonly accountsService: AccountsService,
-  ) {}
+    public readonly configService: ConfigService,
+  ) {
+    this.destination = this.configService.getDest('STORE_DEST');
+  }
 
   /**
    * [description]
@@ -381,5 +390,27 @@ export class TransactionsService {
         return entityReversed;
       },
     );
+  }
+
+  /**
+   * [description]
+   * @param rep
+   * @param owner
+   */
+  public async createOneExportCSV(rep: FastifyReply, owner: UserEntity): Promise<FastifyReply> {
+    const transactions = await this.selectAll({ loadEagerRelations: true }, owner);
+    const fileStream = stringify(
+      transactions.map((t) => flatten(t)),
+      {
+        header: true,
+        cast: { date: (value) => new Date(value).toISOString() },
+      },
+    );
+
+    return rep
+      .type('text/csv')
+      .status(200)
+      .header('content-disposition', `attachment; filename=transactions.csv`)
+      .send(fileStream);
   }
 }
