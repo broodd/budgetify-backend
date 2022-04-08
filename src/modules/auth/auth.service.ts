@@ -144,7 +144,7 @@ export class AuthService {
   ): Promise<UserEntity> {
     return this.usersService
       .selectOneByRepository(conditions, {
-        select: { id: true, password: true },
+        select: { id: true, password: true, baseCurrency: true },
         relations: { refreshTokens: true },
         loadEagerRelations: false,
         ...options,

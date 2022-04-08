@@ -39,6 +39,5 @@ bpn.env
 
 .eslintcache
 
-/digital_ocean
-/digital_ocean.pub
 /postgres_data
+/temp

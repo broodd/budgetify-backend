@@ -1,6 +1,8 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
+import { FastifyReply } from 'fastify';
 import {
+  Res,
   Get,
   Post,
   Body,
@@ -64,6 +66,19 @@ export class TransactionsController {
     @User() owner: UserEntity,
   ): Promise<TransactionEntity[]> {
     return this.transactionsService.selectAllWithBaseBalance(owner, options);
+  }
+
+  /**
+   * [description]
+   * @param rep
+   * @param owner
+   */
+  @Get('export/csv')
+  public async createOneExportCSV(
+    @Res() rep: FastifyReply,
+    @User() owner: UserEntity,
+  ): Promise<FastifyReply> {
+    return this.transactionsService.createOneExportCSV(rep, owner);
   }
 
   /**
