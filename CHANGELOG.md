@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/broodd/budgetify-backend/compare/v0.3.0...v0.4.0) (2022-04-08)
+
+
+### Features
+
+* **modules/transactions:** implemented initial csv export ([7b47a5f](https://github.com/broodd/budgetify-backend/commit/7b47a5f921e6ac64971c89ae4f84ef04604e65b0))
+
+
+
 # [0.3.0](https://github.com/broodd/budgetify-backend/compare/v0.2.2...v0.3.0) (2022-04-07)
 
 
