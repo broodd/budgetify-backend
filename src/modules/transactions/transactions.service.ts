@@ -24,15 +24,13 @@ import { UserEntity } from '../users/entities';
 import { AccountsService } from '../accounts';
 
 import { TransactionEntity, TransactionTypeEnum } from './entities';
-import { ConfigService } from 'src/config';
+import { floatToInt } from 'src/common/helpers';
 
 /**
  * [description]
  */
 @Injectable()
 export class TransactionsService {
-  private readonly destination: string;
-
   /**
    * [description]
    * @param transactionEntityRepository
@@ -45,10 +43,7 @@ export class TransactionsService {
     public readonly exchangeRateService: ExchangeRateService,
     public readonly categoriesService: CategoriesService,
     public readonly accountsService: AccountsService,
-    public readonly configService: ConfigService,
-  ) {
-    this.destination = this.configService.getDest('STORE_DEST');
-  }
+  ) {}
 
   /**
    * [description]
@@ -60,7 +55,7 @@ export class TransactionsService {
     owner: Partial<UserEntity>,
   ): Promise<Partial<TransactionEntity>> {
     const { type, amount, account } = entityLike;
-    const intAmount = amount * 100;
+    const intAmount = floatToInt(amount);
 
     if (type === TransactionTypeEnum.EXPENSE) {
       await this.accountEntityRepository.decrement(
@@ -410,7 +405,7 @@ export class TransactionsService {
     return rep
       .type('text/csv')
       .status(200)
-      .header('content-disposition', `attachment; filename=transactions.csv`)
+      .header('content-disposition', 'attachment; filename=transactions.csv')
       .send(fileStream);
   }
 }

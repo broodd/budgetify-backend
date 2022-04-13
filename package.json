@@ -111,6 +111,7 @@
   },
   "jest": {
     "verbose": true,
+    "silent": false,
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/src/$1",
       "^test/(.*)$": "<rootDir>/test/$1"

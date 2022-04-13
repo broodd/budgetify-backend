@@ -2,6 +2,11 @@
  * [description]
  */
 export enum ErrorTypeEnum {
+  /*
+   * GENERAL
+   */
+  INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
+
   /**
    * AUTH
    */
