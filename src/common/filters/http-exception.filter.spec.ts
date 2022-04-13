@@ -9,12 +9,11 @@ describe('HttpExceptionFilter', () => {
   const context: any = {
     switchToHttp: jest.fn(() => ({
       getResponse: () => ({
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        status: function (code: number) {
+        status() {
           return this;
         },
-        send: function (data: any) {
-          return data;
+        send() {
+          return this;
         },
       }),
     })),
@@ -29,7 +28,6 @@ describe('HttpExceptionFilter', () => {
   });
 
   it('should return an error in specified format', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { message, statusCode, error } = exception.getResponse() as Record<string, any>;
     const received = filter.catch(exception, context);
     expect(received).toEqual({ error, statusCode, message: [].concat(message) });

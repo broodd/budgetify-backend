@@ -6,7 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import compress from 'fastify-compress';
 import helmet from 'fastify-helmet';
 
-import { HttpExceptionFilter } from './common/filters';
+import { AllExceptionFilter } from './common/filters';
 import { ConfigMode, ConfigService } from './config';
 
 import { AppModule } from './app.module';
@@ -18,7 +18,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
   const configService = app.get(ConfigService);
 
-  const httpExceptionFilter = new HttpExceptionFilter();
+  const allExceptionFilter = new AllExceptionFilter();
   const validationPipe = new ValidationPipe({
     forbidNonWhitelisted: true,
     forbidUnknownValues: true,
@@ -28,6 +28,7 @@ async function bootstrap() {
       enableImplicitConversion: true,
     },
   });
+  app.useGlobalPipes(validationPipe).useGlobalFilters(allExceptionFilter);
 
   await app.register(compress, { encodings: ['gzip', 'deflate'] });
   await app.register(helmet, {
@@ -52,10 +53,7 @@ async function bootstrap() {
   }
 
   if (configService.get('IS_HEROKU_WEB')) {
-    return app
-      .useGlobalPipes(validationPipe)
-      .useGlobalFilters(httpExceptionFilter)
-      .listen(configService.get('PORT'), configService.get('HOST'));
+    return app.listen(configService.get('PORT'), configService.get('HOST'));
   }
 }
 
