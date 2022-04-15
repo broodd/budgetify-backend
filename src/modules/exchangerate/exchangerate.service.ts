@@ -119,6 +119,6 @@ export class ExchangeRateService implements OnModuleInit {
 
     const currencies = await this.selectAllFromCache();
     const isEmpty = currencies.some((value) => !value);
-    if (isEmpty) this.selectFromApiAndSaveToCache();
+    if (isEmpty) await this.selectFromApiAndSaveToCache();
   }
 }
