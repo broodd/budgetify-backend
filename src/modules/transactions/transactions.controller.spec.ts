@@ -1,4 +1,4 @@
-import { plainToInstance, classToClassFromExist } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { TransactionsController } from './transactions.controller';
@@ -27,7 +27,8 @@ describe('TransactionsController', () => {
         {
           provide: TransactionsService,
           useValue: {
-            createOne: (data: Partial<TransactionEntity>) => classToClassFromExist(data, owner),
+            createOne: (data: Partial<TransactionEntity>) =>
+              plainToInstance(TransactionEntity, { ...data, ...owner }),
             selectAll: () => [[owner], 1],
             selectAllWithBaseBalance: () => [[owner], 1],
             selectOne: () => new TransactionEntity(),
@@ -63,7 +64,7 @@ describe('TransactionsController', () => {
 
   describe('updateOne', () => {
     it('should be return transaction entity', async () => {
-      const entityLike = classToClassFromExist({ description: '' }, updateDto);
+      const entityLike = plainToInstance(UpdateTransactionDto, { ...updateDto, description: '' });
       const received = await controller.updateOne(owner, entityLike, user);
       expect(received).toBeInstanceOf(TransactionEntity);
     });
