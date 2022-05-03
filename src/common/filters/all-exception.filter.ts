@@ -33,8 +33,8 @@ export class AllExceptionFilter implements ExceptionFilter {
 
     this.logger.error(
       {
+        url: new URL(request.url, 'logger://').pathname,
         method: request.method,
-        url: new URL(request.url, 'logger://logger').pathname,
         params: request.params,
         query: request.query,
         body: request.body,
