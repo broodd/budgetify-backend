@@ -12,8 +12,8 @@ describe('HttpExceptionFilter', () => {
         status() {
           return this;
         },
-        send() {
-          return this;
+        send(data: any) {
+          return data;
         },
       }),
     })),

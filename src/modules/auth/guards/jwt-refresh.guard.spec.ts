@@ -19,8 +19,8 @@ describe('JwtRefreshGuard', () => {
       expect(received).toEqual(expected);
     });
 
-    it('should be return unauthorized exception - AUTH_INVALID_TOKEN', () => {
-      const error = new UnauthorizedException(ErrorTypeEnum.AUTH_INVALID_TOKEN);
+    it('should be return unauthorized exception - AUTH_INVALID_REFRESH_TOKEN', () => {
+      const error = new UnauthorizedException(ErrorTypeEnum.AUTH_INVALID_REFRESH_TOKEN);
       try {
         new JwtRefreshGuard().handleRequest(null, null, new Error());
       } catch (received) {
