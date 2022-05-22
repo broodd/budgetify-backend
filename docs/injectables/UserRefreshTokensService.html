@@ -1,0 +1,1093 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>budgetify-backend documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/laravel.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">budgetify-backend documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Injectables</li>
+  <li >UserRefreshTokensService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/modules/users/services/user-refresh-tokens.service.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>[description]</p>
+
+            </p>
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#userRefreshTokenEntityRepository" >userRefreshTokenEntityRepository</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createOne" >createOne</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteOne" >deleteOne</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#find" >find</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#generateAndCreateOne" >generateAndCreateOne</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#selectAll" >selectAll</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#selectOne" >selectOne</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateOne" >updateOne</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(userRefreshTokenEntityRepository: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">Repository&lt;UserRefreshTokenEntity&gt;</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">src/modules/users/services/user-refresh-tokens.service.ts:24</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div class="io-description"><p>[description]</p>
+</div>
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>userRefreshTokenEntityRepository</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Repository&lt;UserRefreshTokenEntity&gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createOne"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>createOne</b></span>
+                        <a href="#createOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createOne(entityLike: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">Partial&lt;UserRefreshTokenEntity&gt;</a>, options: SaveOptions)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="54"
+                            class="link-to-prism">src/modules/users/services/user-refresh-tokens.service.ts:54</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>[description]</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>entityLike</td>
+                                    <td>
+                                                <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Partial&lt;UserRefreshTokenEntity&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                            <code>SaveOptions</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>{ transaction: false }</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Promise&lt;UserRefreshTokenEntity&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteOne"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>deleteOne</b></span>
+                        <a href="#deleteOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteOne(conditions: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">FindOptionsWhere&lt;UserRefreshTokenEntity&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="137"
+                            class="link-to-prism">src/modules/users/services/user-refresh-tokens.service.ts:137</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>[description]</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>conditions</td>
+                                    <td>
+                                                <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >FindOptionsWhere&lt;UserRefreshTokenEntity&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Promise&lt;UserRefreshTokenEntity&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="find"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>find</b></span>
+                        <a href="#find"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>find(optionsOrConditions?: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">FindManyOptions&lt;UserRefreshTokenEntity&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="70"
+                            class="link-to-prism">src/modules/users/services/user-refresh-tokens.service.ts:70</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p> [description]</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>optionsOrConditions</td>
+                                    <td>
+                                                <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >FindManyOptions&lt;UserRefreshTokenEntity&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >SelectQueryBuilder&lt;UserRefreshTokenEntity&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="generateAndCreateOne"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>generateAndCreateOne</b></span>
+                        <a href="#generateAndCreateOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>generateAndCreateOne(entityLike: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">Partial&lt;UserRefreshTokenEntity&gt;</a>, options: SaveOptions)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">src/modules/users/services/user-refresh-tokens.service.ts:39</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>[description]</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>entityLike</td>
+                                    <td>
+                                                <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Partial&lt;UserRefreshTokenEntity&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                            <code>SaveOptions</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>{ transaction: false }</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Promise&lt;UserRefreshTokenEntity&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectAll"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>selectAll</b></span>
+                        <a href="#selectAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>selectAll(options: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">FindManyOptions&lt;UserRefreshTokenEntity&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="85"
+                            class="link-to-prism">src/modules/users/services/user-refresh-tokens.service.ts:85</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>[description]</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                                <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >FindManyOptions&lt;UserRefreshTokenEntity&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>{ loadEagerRelations: false }</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Promise&lt;UserRefreshTokenEntity[]&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectOne"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>selectOne</b></span>
+                        <a href="#selectOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>selectOne(conditions: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">FindOptionsWhere&lt;UserRefreshTokenEntity&gt;</a>, options: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">FindOneOptions&lt;UserRefreshTokenEntity&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="100"
+                            class="link-to-prism">src/modules/users/services/user-refresh-tokens.service.ts:100</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>[description]</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>conditions</td>
+                                    <td>
+                                                <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >FindOptionsWhere&lt;UserRefreshTokenEntity&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                                <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >FindOneOptions&lt;UserRefreshTokenEntity&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>{ loadEagerRelations: false }</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Promise&lt;UserRefreshTokenEntity&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateOne"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>updateOne</b></span>
+                        <a href="#updateOne"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateOne(conditions: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">FindOptionsWhere&lt;UserRefreshTokenEntity&gt;</a>, entityLike: <a href="../entitys/UserRefreshTokenEntity.html" target="_self">Partial&lt;UserRefreshTokenEntity&gt;</a>, options: SaveOptions)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="118"
+                            class="link-to-prism">src/modules/users/services/user-refresh-tokens.service.ts:118</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>[description]</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>conditions</td>
+                                    <td>
+                                                <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >FindOptionsWhere&lt;UserRefreshTokenEntity&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>entityLike</td>
+                                    <td>
+                                                <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Partial&lt;UserRefreshTokenEntity&gt;</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>options</td>
+                                    <td>
+                                            <code>SaveOptions</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>{ transaction: false }</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Promise&lt;UserRefreshTokenEntity&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section>
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userRefreshTokenEntityRepository"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>userRefreshTokenEntityRepository</b></span>
+                        <a href="#userRefreshTokenEntityRepository"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/UserRefreshTokenEntity.html" target="_self" >Repository&lt;UserRefreshTokenEntity&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @InjectRepository(UserRefreshTokenEntity)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">src/modules/users/services/user-refresh-tokens.service.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConflictException, Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { InjectRepository } from &#x27;@nestjs/typeorm&#x27;;
+import { instanceToPlain } from &#x27;class-transformer&#x27;;
+import { randomBytes } from &#x27;crypto&#x27;;
+import { hash } from &#x27;bcrypt&#x27;;
+import {
+  Repository,
+  SaveOptions,
+  FindOneOptions,
+  FindManyOptions,
+  FindOptionsWhere,
+  FindOptionsUtils,
+  SelectQueryBuilder,
+} from &#x27;typeorm&#x27;;
+
+import { ErrorTypeEnum } from &#x27;src/common/enums&#x27;;
+
+import { UserRefreshTokenEntity } from &#x27;../entities&#x27;;
+
+/**
+ * [description]
+ */
+@Injectable()
+export class UserRefreshTokensService {
+  /**
+   * [description]
+   * @param userRefreshTokenEntityRepository
+   */
+  constructor(
+    @InjectRepository(UserRefreshTokenEntity)
+    public readonly userRefreshTokenEntityRepository: Repository&lt;UserRefreshTokenEntity&gt;,
+  ) {}
+
+  /**
+   * [description]
+   * @param entityLike
+   * @param options
+   */
+  public async generateAndCreateOne(
+    entityLike: Partial&lt;UserRefreshTokenEntity&gt;,
+    options: SaveOptions &#x3D; { transaction: false },
+  ): Promise&lt;UserRefreshTokenEntity&gt; {
+    const refreshIdentifier &#x3D; randomBytes(16).toString(&#x27;hex&#x27;);
+    const refreshHash &#x3D; await hash(refreshIdentifier, 8);
+    const entity &#x3D; await this.createOne({ ...entityLike, ppid: refreshHash }, options);
+    return { ...entity, ppid: refreshIdentifier };
+  }
+
+  /**
+   * [description]
+   * @param entityLike
+   * @param options
+   */
+  public async createOne(
+    entityLike: Partial&lt;UserRefreshTokenEntity&gt;,
+    options: SaveOptions &#x3D; { transaction: false },
+  ): Promise&lt;UserRefreshTokenEntity&gt; {
+    return this.userRefreshTokenEntityRepository.manager.transaction(async () &#x3D;&gt; {
+      const entity &#x3D; this.userRefreshTokenEntityRepository.create(entityLike);
+      return this.userRefreshTokenEntityRepository.save(entity, options).catch(() &#x3D;&gt; {
+        throw new ConflictException(ErrorTypeEnum.USER_REFRESH_TOKEN_ALREADY_EXIST);
+      });
+    });
+  }
+
+  /**
+   *  [description]
+   * @param optionsOrConditions
+   */
+  public find(
+    optionsOrConditions?: FindManyOptions&lt;UserRefreshTokenEntity&gt;,
+  ): SelectQueryBuilder&lt;UserRefreshTokenEntity&gt; {
+    const metadata &#x3D; this.userRefreshTokenEntityRepository.metadata;
+    return this.userRefreshTokenEntityRepository
+      .createQueryBuilder(
+        FindOptionsUtils.extractFindManyOptionsAlias(optionsOrConditions) || metadata.name,
+      )
+      .setFindOptions(optionsOrConditions);
+  }
+
+  /**
+   * [description]
+   * @param options
+   */
+  public async selectAll(
+    options: FindManyOptions&lt;UserRefreshTokenEntity&gt; &#x3D; { loadEagerRelations: false },
+  ): Promise&lt;UserRefreshTokenEntity[]&gt; {
+    const qb &#x3D; this.find(instanceToPlain(options));
+    if (options.where) qb.where(options.where);
+    return qb.getMany().catch(() &#x3D;&gt; {
+      throw new NotFoundException(ErrorTypeEnum.USER_REFRESH_TOKENS_NOT_FOUND);
+    });
+  }
+
+  /**
+   * [description]
+   * @param conditions
+   * @param options
+   */
+  public async selectOne(
+    conditions: FindOptionsWhere&lt;UserRefreshTokenEntity&gt;,
+    options: FindOneOptions&lt;UserRefreshTokenEntity&gt; &#x3D; { loadEagerRelations: false },
+  ): Promise&lt;UserRefreshTokenEntity&gt; {
+    return this.find(instanceToPlain(options))
+      .where(conditions)
+      .getOneOrFail()
+      .catch(() &#x3D;&gt; {
+        throw new NotFoundException(ErrorTypeEnum.USER_REFRESH_TOKEN_NOT_FOUND);
+      });
+  }
+
+  /**
+   * [description]
+   * @param conditions
+   * @param entityLike
+   * @param options
+   */
+  public async updateOne(
+    conditions: FindOptionsWhere&lt;UserRefreshTokenEntity&gt;,
+    entityLike: Partial&lt;UserRefreshTokenEntity&gt;,
+    options: SaveOptions &#x3D; { transaction: false },
+  ): Promise&lt;UserRefreshTokenEntity&gt; {
+    return this.userRefreshTokenEntityRepository.manager.transaction(async () &#x3D;&gt; {
+      const mergeIntoEntity &#x3D; await this.selectOne(conditions);
+      const entity &#x3D; this.userRefreshTokenEntityRepository.merge(mergeIntoEntity, entityLike);
+      return this.userRefreshTokenEntityRepository.save(entity, options).catch(() &#x3D;&gt; {
+        throw new ConflictException(ErrorTypeEnum.USER_REFRESH_TOKEN_ALREADY_EXIST);
+      });
+    });
+  }
+
+  /**
+   * [description]
+   * @param conditions
+   * @param options
+   */
+  public async deleteOne(
+    conditions: FindOptionsWhere&lt;UserRefreshTokenEntity&gt;,
+  ): Promise&lt;UserRefreshTokenEntity&gt; {
+    return this.userRefreshTokenEntityRepository.manager.transaction(
+      async (transactionalEntityManager) &#x3D;&gt; {
+        const entity &#x3D; await this.selectOne(conditions);
+        await transactionalEntityManager
+          .delete(UserRefreshTokenEntity, conditions)
+          .then(({ affected }) &#x3D;&gt; {
+            if (!affected) throw new NotFoundException(ErrorTypeEnum.USER_REFRESH_TOKEN_NOT_FOUND);
+          })
+          .catch(() &#x3D;&gt; {
+            throw new NotFoundException(ErrorTypeEnum.USER_REFRESH_TOKEN_NOT_FOUND);
+          });
+        return entity;
+      },
+    );
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'UserRefreshTokensService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

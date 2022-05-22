@@ -14,7 +14,7 @@ export class ConfigService {
    * DotEnv config
    */
   constructor() {
-    const { error } = config({ path: `.env.${process.env.NODE_ENV}` });
+    const { error } = config({ path: `env/.env.${process.env.NODE_ENV}` });
     if (error) throw error;
   }
 
