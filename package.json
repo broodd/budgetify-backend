@@ -1,6 +1,6 @@
 {
   "name": "budgetify-backend",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Nest.js is based on Fastify and TypeORM setup",
   "author": {
     "name": "broodd",
