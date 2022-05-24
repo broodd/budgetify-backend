@@ -1,3 +1,7 @@
+## [0.5.4](https://github.com/broodd/budgetify-backend/compare/v0.5.3...v0.5.4) (2022-05-24)
+
+
+
 ## [0.5.3](https://github.com/broodd/budgetify-backend/compare/v0.5.2...v0.5.3) (2022-05-22)
 
 
@@ -21,15 +25,6 @@
 ### Features
 
 * added all error filter ([34e532f](https://github.com/broodd/budgetify-backend/commit/34e532ff7d769de8b09eae71474206a835686aa3))
-
-
-
-# [0.4.0](https://github.com/broodd/budgetify-backend/compare/v0.3.0...v0.4.0) (2022-04-08)
-
-
-### Features
-
-* **modules/transactions:** implemented initial csv export ([7b47a5f](https://github.com/broodd/budgetify-backend/commit/7b47a5f921e6ac64971c89ae4f84ef04604e65b0))
 
 
 
